@@ -1,123 +1,515 @@
-<section class="bg-brand-50 py-20">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-3xl text-center animate-fade-up">
-      <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-700 shadow-soft">
-        <%= lucide_icon "chart-column", class: "h-4 w-4" %>
-        TMT Valuation Snapshot
-      </span>
+<section class="min-h-screen bg-brand-50 py-24 sm:py-28">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-controller="valuation">
 
-      <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-brand-900 sm:text-5xl">
-        Estimate your TMT business valuation
-      </h1>
+    <%= form_with model: Lead.new, url: leads_path do |f| %>
+      <%= f.hidden_field :source, value: "valuation_snapshot" %>
 
-      <p class="mt-5 text-lg leading-8 text-slate-600">
-        Share your company details to receive a preliminary, non-binding valuation snapshot based on revenue, EBITDA, ARR, margins, and buyer demand.
+      <!-- STEP 1: WEBSITE -->
+      <div data-valuation-target="websiteStep" class="mx-auto max-w-5xl text-center">
+        <div class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-900 shadow-soft">
+          <%= lucide_icon "sparkles", class: "h-4 w-4 text-brand-300" %>
+          TMT Valuation Snapshot
+        </div>
+
+        <h1 class="mt-6 font-serif text-5xl font-medium leading-tight text-brand-900 sm:text-6xl lg:text-7xl">
+          Get an instant valuation view
+          <br>
+          for your TMT business
+        </h1>
+
+        <p class="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+          Receive a preliminary valuation snapshot based on revenue, profit, value drivers, market comps, and buyer demand.
+        </p>
+
+        <div class="mx-auto mt-10 max-w-xl rounded-sm border border-brand-100 bg-white p-6 shadow-soft">
+          <%= f.label :company_website, "Enter your company website", class: "mb-2 block text-left font-serif text-2xl font-medium text-brand-900" %>
+
+          <%= f.url_field :company_website,
+            placeholder: "Company website URL",
+            data: { valuation_target: "websiteInput" },
+            class: "w-full rounded-sm border border-brand-100 px-4 py-4 text-sm text-brand-900 placeholder:text-slate-400" %>
+
+          <button
+            type="button"
+            data-action="valuation#showFinancials"
+            class="mt-5 w-full rounded-sm bg-brand-900 px-6 py-4 text-sm font-bold text-white transition hover:bg-brand-500">
+            Next
+          </button>
+
+          <p class="mt-4 text-center text-xs text-slate-500">
+            No email required to preview. 100% confidential.
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 2: FINANCIAL DATA -->
+      <div data-valuation-target="financialStep" class="mx-auto hidden max-w-6xl">
+        <div class="grid gap-8 lg:grid-cols-2 lg:items-stretch">
+
+          <div class="rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
+            <div class="flex items-start justify-between gap-6">
+              <h2 class="font-serif text-4xl font-medium leading-tight text-brand-900">
+                Now, let’s get some basic financial data
+              </h2>
+
+              <span class="font-serif text-2xl text-brand-900">2/2</span>
+            </div>
+
+            <div class="mt-8 border-t border-brand-100 pt-8">
+              <div>
+                <%= f.label :revenue_range, "Revenue", class: "mb-2 block text-sm font-semibold text-slate-600" %>
+                <%= number_field_tag "valuation_revenue",
+                  nil,
+                  min: 0,
+                  placeholder: "What were your 2025 sales?",
+                  data: { valuation_target: "revenueInput" },
+                  class: "w-full rounded-sm border border-brand-100 px-4 py-4 text-sm text-brand-900" %>
+              </div>
+
+              <div class="mt-5">
+                <%= f.label :profit_range, "Pre-Tax Profit", class: "mb-2 block text-sm font-semibold text-slate-600" %>
+                <%= number_field_tag "valuation_profit",
+                  nil,
+                  min: 0,
+                  placeholder: "What is your net profit before taxes?",
+                  data: { valuation_target: "profitInput" },
+                  class: "w-full rounded-sm border border-brand-100 px-4 py-4 text-sm text-brand-900" %>
+              </div>
+
+              <div class="mt-5">
+                <%= label_tag "valuation_salary", "Owner Salary", class: "mb-2 block text-sm font-semibold text-slate-600" %>
+                <%= number_field_tag "valuation_salary",
+                  nil,
+                  min: 0,
+                  placeholder: "How much do you pay yourself?",
+                  data: { valuation_target: "salaryInput" },
+                  class: "w-full rounded-sm border border-brand-100 px-4 py-4 text-sm text-brand-900" %>
+              </div>
+
+              <button
+                type="button"
+                data-action="valuation#startReport"
+                class="mt-8 w-full rounded-sm bg-brand-900 px-6 py-4 text-sm font-bold text-white transition hover:bg-brand-500">
+                Generate Valuation Report
+              </button>
+
+              <button
+                type="button"
+                data-action="valuation#backToWebsite"
+                class="mt-3 w-full rounded-sm border border-brand-100 px-6 py-4 text-sm font-bold text-brand-900 hover:bg-brand-50">
+                Back
+              </button>
+
+              <p class="mt-6 text-center text-sm leading-6 text-slate-500">
+                Free instant valuation. No email or sign-up necessary.
+              </p>
+            </div>
+          </div>
+
+          <div class="rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
+            <h3 class="font-serif text-4xl font-medium text-brand-900">
+              <span data-valuation-target="companyName">Your Business</span>
+            </h3>
+
+            <div class="mt-4 space-y-3">
+              <div class="h-4 w-full rounded-full bg-brand-50"></div>
+              <div class="h-4 w-10/12 rounded-full bg-brand-50"></div>
+              <div class="h-4 w-8/12 rounded-full bg-brand-50"></div>
+            </div>
+
+            <div class="mt-6 flex items-center gap-2 border-b border-brand-100 pb-6 text-sm text-slate-600">
+              <%= lucide_icon "globe", class: "h-4 w-4" %>
+              www.company.com
+            </div>
+
+            <div class="mt-8">
+              <p class="text-lg font-semibold text-brand-900">Products & Services</p>
+
+              <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <div class="h-10 rounded-sm bg-brand-50"></div>
+                <div class="h-10 rounded-sm bg-brand-50"></div>
+                <div class="h-10 rounded-sm bg-brand-50"></div>
+                <div class="h-10 rounded-sm bg-brand-50"></div>
+              </div>
+            </div>
+
+            <div class="mt-8 border-t border-brand-100 pt-8">
+              <p class="text-lg font-semibold text-brand-900">End Markets</p>
+
+              <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                <div class="h-10 rounded-sm bg-brand-50"></div>
+                <div class="h-10 rounded-sm bg-brand-50"></div>
+                <div class="h-10 rounded-sm bg-brand-50"></div>
+                <div class="h-10 rounded-sm bg-brand-50 sm:col-span-2"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- STEP 3: PROCESSING -->
+<div data-valuation-target="loadingStep" class="mx-auto hidden max-w-6xl">
+  <div class="grid gap-8 lg:grid-cols-2 lg:items-stretch">
+
+    <!-- Left Processing -->
+    <div class="rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">
+        Preparing valuation snapshot
       </p>
+
+      <h2 class="mt-5 font-serif text-4xl font-medium text-brand-900">
+        Building your valuation report...
+      </h2>
+
+      <div class="mt-8">
+        <div class="flex items-center justify-between text-sm font-bold text-brand-900">
+          <span data-valuation-target="loadingTitle">Analyzing website</span>
+          <span data-valuation-target="progressText">0%</span>
+        </div>
+
+        <div class="mt-3 h-3 overflow-hidden rounded-full bg-brand-50">
+          <div
+            data-valuation-target="progressBar"
+            class="h-full w-0 rounded-full bg-brand-300 transition-all duration-300">
+          </div>
+        </div>
+
+        <p data-valuation-target="loadingDescription" class="mt-4 text-sm leading-6 text-slate-600">
+          Reviewing company signals and business model.
+        </p>
+      </div>
+
+      <div data-valuation-target="stepList" class="mt-8 space-y-3"></div>
     </div>
 
-    <div class="mx-auto mt-14 grid max-w-6xl gap-10 lg:grid-cols-5">
-      <div class="lg:col-span-2">
-        <div class="rounded-3xl bg-brand-900 p-8 text-white shadow-soft">
-          <h2 class="text-2xl font-bold">What we look at</h2>
+    <!-- Right Company Preview -->
+    <div class="rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
+      <h3 class="font-serif text-4xl font-medium text-brand-900">
+        <span data-valuation-target="companyName">Your Business</span>
+      </h3>
 
-          <div class="mt-8 space-y-5">
+      <div class="mt-4 space-y-3">
+        <div class="h-4 w-full rounded-full bg-slate-200"></div>
+        <div class="h-4 w-10/12 rounded-full bg-slate-200"></div>
+        <div class="h-4 w-8/12 rounded-full bg-slate-200"></div>
+      </div>
+
+      <div class="mt-6 flex items-center gap-2 border-b border-brand-100 pb-6 text-sm text-slate-600">
+        <%= lucide_icon "globe", class: "h-4 w-4" %>
+        www.company.com
+      </div>
+
+      <div class="mt-8">
+        <p class="text-lg font-semibold text-brand-900">Products & Services</p>
+
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          <div class="h-10 rounded-sm bg-slate-200"></div>
+          <div class="h-10 rounded-sm bg-slate-200"></div>
+          <div class="h-10 rounded-sm bg-slate-200"></div>
+          <div class="h-10 rounded-sm bg-slate-200"></div>
+        </div>
+      </div>
+
+      <div class="mt-8 border-t border-brand-100 pt-8">
+        <p class="text-lg font-semibold text-brand-900">End Markets</p>
+
+        <div class="mt-4 grid gap-3 sm:grid-cols-3">
+          <div class="h-10 rounded-sm bg-slate-200"></div>
+          <div class="h-10 rounded-sm bg-slate-200"></div>
+          <div class="h-10 rounded-sm bg-slate-200"></div>
+          <div class="h-10 rounded-sm bg-slate-200 sm:col-span-2"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+      <!-- STEP 4: REPORT -->
+<div data-valuation-target="reportStep" class="hidden">
+  <div class="mx-auto max-w-5xl text-center">
+    <h2 class="font-serif text-5xl font-medium text-brand-900">
+      <span data-valuation-target="companyName">Your Business</span> Report is Ready
+    </h2>
+
+    <div class="mt-10 flex flex-col items-center justify-center gap-6 sm:flex-row">
+      <div class="flex items-center gap-3">
+        <span data-valuation-target="stepOneIndicator" class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-300 font-bold text-brand-900">1</span>
+        <div class="text-left">
+          <p class="text-sm text-slate-500">Step 1</p>
+          <p class="font-bold text-brand-900">Deal Comps</p>
+        </div>
+      </div>
+
+      <div class="hidden h-px w-16 bg-brand-100 sm:block"></div>
+
+      <div class="flex items-center gap-3">
+        <span data-valuation-target="stepTwoIndicator" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-300 font-bold text-white">2</span>
+        <div class="text-left">
+          <p class="text-sm text-slate-500">Step 2</p>
+          <p class="font-bold text-brand-900">Value Drivers</p>
+        </div>
+      </div>
+
+      <div class="hidden h-px w-16 bg-brand-100 sm:block"></div>
+
+      <div class="flex items-center gap-3">
+        <span data-valuation-target="stepThreeIndicator" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-300 font-bold text-white">3</span>
+        <div class="text-left">
+          <p class="text-sm text-slate-500">Step 3</p>
+          <p class="font-bold text-brand-900">Business Valuation</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-12 max-w-5xl rounded-sm border border-brand-100 bg-white shadow-soft">
+
+    <!-- DEAL COMPS -->
+    <div data-valuation-target="dealCompsStep">
+      <div class="flex items-center justify-between border-b border-brand-100 p-6">
+        <button type="button" class="rounded-full border border-brand-100 px-5 py-2 text-sm font-bold text-slate-400">
+          Prev Step
+        </button>
+
+        <button type="button" data-action="valuation#showValueDrivers" class="rounded-full bg-brand-900 px-5 py-2 text-sm font-bold text-white">
+          Next Step
+        </button>
+      </div>
+
+      <div class="p-8">
+        <h3 class="text-2xl font-bold text-brand-900">Relevant Transactions in Your Space</h3>
+        <p class="mt-2 text-sm text-slate-600">Recently closed deals in your sector.</p>
+
+        <div class="relative mt-8 overflow-hidden rounded-sm border border-brand-100">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-brand-50 text-slate-600">
+              <tr>
+                <th class="p-4">Company</th>
+                <th class="p-4">Revenue</th>
+                <th class="p-4">EBITDA</th>
+                <th class="p-4">SDE</th>
+                <th class="p-4">Sold for</th>
+              </tr>
+            </thead>
+
+            <tbody class="blur-sm">
+              <% 5.times do %>
+                <tr class="border-t border-brand-100">
+                  <td class="p-4">TMT Business</td>
+                  <td class="p-4">$2.8M</td>
+                  <td class="p-4">$610k</td>
+                  <td class="p-4">$720k</td>
+                  <td class="p-4">$3.4M</td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+
+          <div class="absolute inset-0 flex items-center justify-center bg-white/60 px-4 backdrop-blur-sm">
+            <div class="max-w-lg rounded-sm bg-white p-8 shadow-soft">
+              <h4 class="font-serif text-3xl font-medium text-brand-900">
+                View All Relevant Transactions
+              </h4>
+
+              <p class="mt-3 text-sm leading-6 text-slate-600">
+                Review comparable sales, benchmark your business, and plan your next steps.
+              </p>
+
+              <button type="button" data-action="valuation#showValueDrivers" class="mt-5 rounded-sm bg-brand-300 px-6 py-3 text-sm font-bold text-brand-900">
+                Review Deal Comps
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VALUE DRIVERS -->
+    <div data-valuation-target="valueDriversStep" class="hidden">
+      <div class="flex items-center justify-between border-b border-brand-100 p-6">
+        <button type="button" data-action="valuation#showDealComps" class="rounded-full border border-brand-100 px-5 py-2 text-sm font-bold text-brand-900">
+          Prev Step
+        </button>
+
+        <button type="button" data-action="valuation#showBusinessValuation" class="rounded-full bg-brand-900 px-5 py-2 text-sm font-bold text-white">
+          Next Step
+        </button>
+      </div>
+
+      <div class="p-8">
+        <h3 class="text-2xl font-bold text-brand-900">Value Drivers</h3>
+        <p class="mt-2 text-sm text-slate-600">Specific factors that affect your business valuation.</p>
+
+        <div class="mt-8 rounded-sm border border-emerald-100 bg-emerald-50">
+          <div class="border-b border-emerald-100 px-5 py-4">
+            <p class="font-bold text-brand-900">Positive Impact</p>
+          </div>
+
+          <div class="space-y-6 p-6">
             <% [
-              ["Revenue mix", "Recurring, project-based, services, software, or subscription revenue."],
-              ["EBITDA / ARR", "Key valuation anchors for TMT buyers."],
-              ["Retention quality", "Churn, contracts, customer concentration and recurring demand."],
-              ["Buyer demand", "How active acquirers may view the company."]
-            ].each do |title, desc| %>
-              <div class="flex gap-3">
-                <%= lucide_icon "circle-check-big", class: "mt-1 h-5 w-5 shrink-0 text-emerald-400" %>
+              ["Recurring Revenue Streams", "Recurring SaaS, telecom, MSP, or contracted revenue can improve buyer confidence."],
+              ["Strong Margin Profile", "Healthy EBITDA and controlled operating costs may support stronger valuation multiples."],
+              ["Diverse Customer Base", "Lower customer concentration can reduce buyer risk and improve deal confidence."]
+            ].each do |title, description| %>
+              <div class="flex gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-white">
+                  <%= lucide_icon "chart-column", class: "h-5 w-5 text-brand-900" %>
+                </div>
+
                 <div>
-                  <p class="font-semibold"><%= title %></p>
-                  <p class="text-sm text-slate-300"><%= desc %></p>
+                  <h4 class="font-bold text-brand-900"><%= title %></h4>
+                  <p class="mt-1 text-sm leading-6 text-slate-600"><%= description %></p>
                 </div>
               </div>
             <% end %>
           </div>
-
-          <p class="mt-8 text-xs leading-5 text-slate-400">
-            This is an informational estimate only, not a formal appraisal or legal, tax, or investment advice.
-          </p>
         </div>
-      </div>
 
-      <div class="lg:col-span-3">
-        <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
-          <h2 class="text-2xl font-bold text-brand-900">Request valuation snapshot</h2>
-          <p class="mt-2 text-sm text-slate-500">
-            The AcquireTMT team will review your details and follow up.
-          </p>
+        <div class="relative mt-8 overflow-hidden rounded-sm border border-red-100 bg-red-50">
+          <div class="border-b border-red-100 px-5 py-4">
+            <p class="font-bold text-brand-900">Negative Impact</p>
+          </div>
 
-          <%= form_with model: Lead.new, url: leads_path, class: "mt-8 space-y-6" do |f| %>
-            <%= f.hidden_field :source, value: "valuation_snapshot" %>
-
-            <div class="grid gap-5 sm:grid-cols-2">
-              <div>
-                <%= f.label :first_name, class: "mb-2 block text-sm font-semibold text-slate-700" %>
-                <%= f.text_field :first_name, class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
-
-              <div>
-                <%= f.label :last_name, class: "mb-2 block text-sm font-semibold text-slate-700" %>
-                <%= f.text_field :last_name, class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
+          <div class="space-y-6 p-6 blur-sm">
+            <div class="flex gap-4">
+              <div class="h-10 w-10 rounded-sm bg-white"></div>
+              <div class="flex-1">
+                <div class="h-4 w-1/2 rounded bg-white"></div>
+                <div class="mt-3 h-3 w-full rounded bg-white"></div>
+                <div class="mt-2 h-3 w-10/12 rounded bg-white"></div>
               </div>
             </div>
+          </div>
 
-            <div class="grid gap-5 sm:grid-cols-2">
-              <div>
-                <%= f.label :email, class: "mb-2 block text-sm font-semibold text-slate-700" %>
-                <%= f.email_field :email, class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
+          <div class="absolute inset-0 flex items-center justify-center bg-white/50 px-4 backdrop-blur-sm">
+            <div class="max-w-lg rounded-sm bg-white p-7 shadow-soft">
+              <h4 class="font-serif text-3xl font-medium text-brand-900">
+                View All Relevant Value Drivers
+              </h4>
 
-              <div>
-                <%= f.label :phone, class: "mb-2 block text-sm font-semibold text-slate-700" %>
-                <%= f.telephone_field :phone, class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
+              <p class="mt-3 text-sm leading-6 text-slate-600">
+                Book a free call with an M&A advisor to unpack how each driver helps or hurts your valuation.
+              </p>
+
+              <button type="button" data-action="valuation#showBusinessValuation" class="mt-5 rounded-sm bg-brand-300 px-6 py-3 text-sm font-bold text-brand-900">
+                Review Value Drivers
+              </button>
             </div>
-
-            <div>
-              <%= f.label :company_name, class: "mb-2 block text-sm font-semibold text-slate-700" %>
-              <%= f.text_field :company_name, class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-            </div>
-
-            <div>
-              <%= f.label :company_website, "Company Website", class: "mb-2 block text-sm font-semibold text-slate-700" %>
-              <%= f.url_field :company_website, class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-            </div>
-
-            <div class="grid gap-5 sm:grid-cols-2">
-              <div>
-                <%= f.label :company_type, class: "mb-2 block text-sm font-semibold text-slate-700" %>
-                <%= f.select :company_type,
-                  ["SaaS", "MSP / IT Services", "Telecom", "Digital Media", "Cybersecurity", "Other"],
-                  {},
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
-
-              <div>
-                <%= f.label :revenue_range, class: "mb-2 block text-sm font-semibold text-slate-700" %>
-                <%= f.select :revenue_range,
-                  ["Under $1M", "$1M - $5M", "$5M - $25M", "$25M+"],
-                  {},
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
-            </div>
-
-            <div>
-              <%= f.label :ebitda_range, "EBITDA / ARR Range", class: "mb-2 block text-sm font-semibold text-slate-700" %>
-              <%= f.select :ebitda_range,
-                ["Pre-profit", "Under $500k", "$500k - $2M", "$2M - $10M", "$10M+"],
-                {},
-                class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-            </div>
-
-            <%= f.submit "Request Valuation Snapshot",
-              class: "w-full rounded-full bg-brand-900 px-6 py-4 text-sm font-bold text-white hover:bg-slate-800" %>
-          <% end %>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- BUSINESS VALUATION + FORM ONLY HERE -->
+    <div data-valuation-target="businessValuationStep" class="hidden">
+      <div class="flex items-center justify-between border-b border-brand-100 p-6">
+        <button type="button" data-action="valuation#showValueDrivers" class="rounded-full border border-brand-100 px-5 py-2 text-sm font-bold text-brand-900">
+          Prev Step
+        </button>
+
+        <button type="button" class="rounded-full bg-slate-100 px-5 py-2 text-sm font-bold text-white">
+          Next Step
+        </button>
+      </div>
+
+      <div class="p-8">
+        <h3 class="text-2xl font-bold text-brand-900">Valuation Overview</h3>
+        <p class="mt-2 text-sm text-slate-600">
+          Your business valuation based on different approaches and market data.
+        </p>
+
+        <div class="mt-10 text-center">
+          <p class="text-sm text-slate-600">Estimated Value Range</p>
+
+          <p class="mt-3 font-serif text-6xl font-medium text-brand-900">
+            $231K - $313K
+          </p>
+
+          <p class="mt-4 text-sm text-slate-600">Valuation based on:</p>
+
+          <div class="mt-3 flex flex-wrap justify-center gap-2">
+            <span class="rounded-full bg-brand-50 px-4 py-2 text-xs font-semibold text-brand-900">Business Details</span>
+            <span class="rounded-full bg-brand-50 px-4 py-2 text-xs font-semibold text-brand-900">Similar Deals</span>
+            <span class="rounded-full bg-brand-50 px-4 py-2 text-xs font-semibold text-brand-900">Market Trends</span>
+          </div>
+        </div>
+
+        <div class="relative mt-10 overflow-hidden rounded-sm border border-brand-100">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-brand-50 text-slate-600">
+              <tr>
+                <th class="p-4">Approach</th>
+                <th class="p-4">Valuation Range</th>
+                <th class="p-4">Multiplier</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr class="border-t border-brand-100">
+                <td class="p-4">SDE-based</td>
+                <td class="p-4">$231K — $313K</td>
+                <td class="p-4">2.9x - 3.9x</td>
+              </tr>
+              <tr class="border-t border-brand-100">
+                <td class="p-4">EBITDA-based</td>
+                <td class="p-4">$327K — $443K</td>
+                <td class="p-4">4.7x - 6.3x</td>
+              </tr>
+              <tr class="border-t border-brand-100 blur-sm">
+                <td class="p-4">Revenue-based</td>
+                <td class="p-4">$410K — $620K</td>
+                <td class="p-4">1.8x - 2.5x</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mx-auto mt-10 max-w-xl rounded-sm bg-brand-900 p-7 text-white shadow-soft">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-300">
+            Claim your free M&A expert session
+          </p>
+
+          <h4 class="mt-3 font-serif text-3xl font-medium text-white">
+            Take the first step today.
+          </h4>
+
+          <p class="mt-2 text-sm leading-6 text-white/70">
+            Turn buyer interest into competing offers and get acquired on better terms.
+          </p>
+
+          <div class="mt-5 space-y-3">
+            <%= f.text_field :first_name,
+              placeholder: "Full Name",
+              class: "w-full rounded-sm border border-white/10 bg-white px-4 py-3 text-sm text-brand-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300" %>
+
+            <%= f.email_field :email,
+              placeholder: "Email Address",
+              class: "w-full rounded-sm border border-white/10 bg-white px-4 py-3 text-sm text-brand-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300" %>
+
+            <%= f.telephone_field :phone,
+              placeholder: "Mobile Number",
+              class: "w-full rounded-sm border border-white/10 bg-white px-4 py-3 text-sm text-brand-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300" %>
+
+            <%= f.select :message,
+              ["When are you looking to sell?", "Immediately", "3-6 months", "6-12 months", "Just exploring"],
+              {},
+              class: "w-full rounded-sm border border-white/10 bg-white px-4 py-3 text-sm text-brand-900 focus:outline-none focus:ring-2 focus:ring-brand-300" %>
+
+            <%= f.submit "Book 15 minute call",
+              class: "w-full rounded-sm bg-brand-300 px-6 py-4 text-sm font-bold text-brand-900 transition hover:bg-white" %>
+          </div>
+
+          <p class="mt-4 text-center text-xs text-white/60">
+            No commitment, just a 15 minute chat.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <% end %>
   </div>
 </section>
