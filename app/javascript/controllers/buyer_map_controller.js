@@ -1,0 +1,115 @@
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = [
+    "websiteStep",
+    "financialStep",
+    "loadingStep",
+    "resultsStep",
+    "detailsStep",
+    "websiteInput",
+    "websitePreview",
+    "companyName",
+    "progressBar",
+    "progressText",
+    "loadingTitle",
+    "loadingDescription",
+    "buyerCount"
+  ]
+
+  connect() {
+    this.progressMessages = [
+      ["Analyzing website", "Reviewing company signals and business context."],
+      ["Checking industry", "Identifying likely TMT category and buyer fit."],
+      ["Reviewing revenue profile", "Mapping size range to likely acquisition interest."],
+      ["Searching buyer database", "Scanning strategic acquirers, PE platforms and active mandates."],
+      ["Finding potential buyers", "Matching buyer categories to your company profile."],
+      ["Preparing BuyerMap", "Generating your preliminary buyer universe preview."]
+    ]
+  }
+
+  showFinancials(event) {
+    event.preventDefault()
+
+    const website = this.websiteInputTarget.value.trim()
+
+    if (!website) {
+      alert("Please enter your company website.")
+      return
+    }
+
+    const name = this.extractCompanyName(website)
+
+    this.websitePreviewTarget.textContent = website
+    this.companyNameTargets.forEach((target) => {
+      target.textContent = name
+    })
+
+    this.websiteStepTarget.classList.add("hidden")
+    this.financialStepTarget.classList.remove("hidden")
+  }
+
+  startLoading(event) {
+    event.preventDefault()
+
+    this.financialStepTarget.classList.add("hidden")
+    this.loadingStepTarget.classList.remove("hidden")
+
+    let progress = 0
+    let messageIndex = 0
+
+    this.progressBarTarget.style.width = "0%"
+    this.progressTextTarget.textContent = "0%"
+
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 9) + 4
+
+      if (progress >= 100) {
+        progress = 100
+      }
+
+      this.progressBarTarget.style.width = `${progress}%`
+      this.progressTextTarget.textContent = `${progress}%`
+
+      const nextIndex = Math.min(
+        Math.floor((progress / 100) * this.progressMessages.length),
+        this.progressMessages.length - 1
+      )
+
+      if (nextIndex !== messageIndex) {
+        messageIndex = nextIndex
+        this.loadingTitleTarget.textContent = this.progressMessages[messageIndex][0]
+        this.loadingDescriptionTarget.textContent = this.progressMessages[messageIndex][1]
+      }
+
+      if (progress === 100) {
+        clearInterval(interval)
+
+        setTimeout(() => {
+          const simulatedCount = Math.floor(Math.random() * 176) + 425
+
+          this.buyerCountTarget.textContent = simulatedCount
+          this.loadingStepTarget.classList.add("hidden")
+          this.resultsStepTarget.classList.remove("hidden")
+        }, 700)
+      }
+    }, 400)
+  }
+
+  
+  backToWebsite(event) {
+    event.preventDefault()
+
+    this.financialStepTarget.classList.add("hidden")
+    this.websiteStepTarget.classList.remove("hidden")
+  }
+
+  extractCompanyName(url) {
+    try {
+      const parsedUrl = new URL(url.startsWith("http") ? url : `https://${url}`)
+      return parsedUrl.hostname.replace("www.", "").split(".")[0]
+    } catch {
+      return "your business"
+    }
+  }
+}

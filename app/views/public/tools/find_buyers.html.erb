@@ -1,151 +1,580 @@
-<section class="bg-brand-50 py-20">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-3xl text-center animate-fade-up">
-      <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-700 shadow-soft">
-        <%= lucide_icon "network", class: "h-4 w-4" %>
-        AcquireTMT BuyerMap
-      </span>
+<section class="min-h-screen bg-brand-50 py-24 sm:py-28">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-controller="buyer-map">
 
-      <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-brand-900 sm:text-5xl">
-        Find buyers for your TMT business
-      </h1>
+    <%= form_with model: Lead.new, url: leads_path do |f| %>
+      <%= f.hidden_field :source, value: "buyer_map" %>
 
-      <p class="mt-5 text-lg leading-8 text-slate-600">
-        Get a preliminary buyer universe across strategic acquirers, PE-backed platforms, family offices, search funds, and international buyers.
-      </p>
-    </div>
+      <!-- STEP 1: WEBSITE INPUT -->
+      <div data-buyer-map-target="websiteStep" class="mx-auto max-w-4xl text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">
+          AcquireTMT BuyerMap
+        </p>
 
-    <div class="mx-auto mt-14 grid max-w-6xl gap-10 lg:grid-cols-5">
-      <!-- Left -->
-      <div class="lg:col-span-2">
-        <div class="rounded-3xl bg-brand-900 p-8 text-white shadow-soft">
-          <h2 class="text-2xl font-bold">
-            What you'll receive
+        <h1 class="mt-5 font-serif text-5xl font-medium leading-tight text-brand-900 sm:text-6xl">
+          Find buyers for your TMT business.
+        </h1>
+
+        <p class="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+          Enter your company website to begin building a preliminary buyer universe across strategic acquirers, PE-backed platforms, family offices, search funds, and international buyers.
+        </p>
+
+        <div class="mx-auto mt-10 max-w-2xl rounded-sm border border-brand-100 bg-white p-6 shadow-soft">
+          <%= f.label :company_website, "Company website", class: "mb-2 block text-left text-sm font-semibold text-brand-900" %>
+
+          <%= f.url_field :company_website,
+            placeholder: "https://example.com",
+            data: { buyer_map_target: "websiteInput" },
+            class: "w-full rounded-sm border border-brand-100 px-4 py-4 text-base outline-none focus:border-brand-500" %>
+
+          <button
+            type="button"
+            data-action="buyer-map#showFinancials"
+            class="mt-5 w-full rounded-sm bg-brand-900 px-6 py-4 text-sm font-bold text-white transition hover:bg-brand-500">
+            Find Potential Buyers
+          </button>
+
+          <p class="mt-5 flex items-center justify-center gap-2 text-sm text-slate-500">
+            <%= lucide_icon "lock", class: "h-4 w-4" %>
+            Your data is confidential and never shared.
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 2: FINANCIAL DATA -->
+      <div data-buyer-map-target="financialStep" class="mx-auto hidden max-w-5xl">
+        <div class="rounded-sm border border-brand-100 bg-white p-8 shadow-soft sm:p-10">
+          <h2 class="font-serif text-4xl font-medium text-brand-900">
+            Now, let’s get some basic financial data
           </h2>
 
-          <div class="mt-8 space-y-5">
-            <% [
-              ["Buyer categories", "Strategic, PE-backed, sponsor-backed and international buyers."],
-              ["TMT fit assessment", "How your company may fit buyer demand."],
-              ["Preliminary outreach direction", "Understand likely acquisition interest."],
-              ["Confidential review", "Shared privately with the AcquireTMT team."]
-            ].each do |title, desc| %>
+          <p class="mt-3 text-sm leading-6 text-slate-600">
+            Website entered:
+            <span class="font-semibold text-brand-900" data-buyer-map-target="websitePreview"></span>
+          </p>
 
-              <div class="flex gap-3">
-                <%= lucide_icon "circle-check-big",
-                  class: "mt-1 h-5 w-5 shrink-0 text-emerald-400" %>
+          <div class="mt-8 border-t border-brand-100 pt-8">
+            <div>
+              <%= f.label :revenue_range, "Annual Revenue", class: "mb-3 block text-base font-semibold text-brand-900" %>
+              <%= f.select :revenue_range,
+                ["Select a value", "Under $1M", "$1M - $5M", "$5M - $25M", "$25M - $100M", "$100M+"],
+                {},
+                class: "w-full rounded-sm border border-brand-100 bg-white px-4 py-4 text-base text-slate-700" %>
+            </div>
 
-                <div>
-                  <p class="font-semibold"><%= title %></p>
-                  <p class="text-sm text-slate-300">
-                    <%= desc %>
-                  </p>
-                </div>
-              </div>
+            <div class="mt-7">
+              <%= f.label :profit_range, "Annual Profit", class: "mb-3 block text-base font-semibold text-brand-900" %>
+              <%= f.select :profit_range,
+                ["Select a value", "Not profitable yet", "Under $250k", "$250k - $1M", "$1M - $5M", "$5M+"],
+                {},
+                class: "w-full rounded-sm border border-brand-100 bg-white px-4 py-4 text-base text-slate-700" %>
+            </div>
+          </div>
 
-            <% end %>
+          <div class="mt-8 border-t border-brand-100 pt-8">
+            <button
+              type="button"
+              data-action="buyer-map#startLoading"
+              class="w-full rounded-sm bg-brand-900 px-6 py-4 text-sm font-bold text-white transition hover:bg-brand-500">
+              Find Potential Buyers
+            </button>
+
+            <button
+              type="button"
+              data-action="buyer-map#backToWebsite"
+              class="mt-3 w-full rounded-sm border border-brand-100 px-6 py-4 text-sm font-bold text-brand-900 hover:bg-brand-50">
+              Back
+            </button>
+
+            <p class="mt-6 flex items-center justify-center gap-2 text-sm text-slate-500">
+              <%= lucide_icon "lock", class: "h-4 w-4" %>
+              Your data is 100% confidential and never shared.
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Right Form -->
-      <div class="lg:col-span-3">
-        <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
-          <h2 class="text-2xl font-bold text-brand-900">
-            Tell us about your business
-          </h2>
-
-          <p class="mt-2 text-sm text-slate-500">
-            We'll use this to generate a preliminary BuyerMap.
+      <!-- STEP 3: LOADING -->
+      <div data-buyer-map-target="loadingStep" class="mx-auto hidden max-w-4xl">
+        <div class="rounded-sm border border-brand-100 bg-white p-8 text-center shadow-soft sm:p-10">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">
+            Building BuyerMap
           </p>
 
-          <%= form_with model: Lead.new,
-            url: leads_path,
-            class: "mt-8 space-y-6" do |f| %>
+          <h2 class="mt-5 font-serif text-4xl font-medium text-brand-900">
+            Finding potential buyers...
+          </h2>
 
-            <%= f.hidden_field :source, value: "buyer_map" %>
+          <div class="mt-8">
+            <div class="flex items-center justify-between text-sm font-bold text-brand-900">
+              <span data-buyer-map-target="loadingTitle">Analyzing website</span>
+              <span data-buyer-map-target="progressText">0%</span>
+            </div>
 
-            <div class="grid gap-5 sm:grid-cols-2">
-              <div>
-                <%= f.label :first_name,
-                  class: "mb-2 block text-sm font-semibold text-slate-700" %>
-
-                <%= f.text_field :first_name,
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" %>
-              </div>
-
-              <div>
-                <%= f.label :last_name,
-                  class: "mb-2 block text-sm font-semibold text-slate-700" %>
-
-                <%= f.text_field :last_name,
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
+            <div class="mt-3 h-3 overflow-hidden rounded-full bg-brand-50">
+              <div
+                data-buyer-map-target="progressBar"
+                class="h-full w-0 rounded-full bg-brand-300 transition-all duration-300">
               </div>
             </div>
 
-            <div class="grid gap-5 sm:grid-cols-2">
-              <div>
-                <%= f.label :email,
-                  class: "mb-2 block text-sm font-semibold text-slate-700" %>
+            <p data-buyer-map-target="loadingDescription" class="mt-4 text-sm leading-6 text-slate-600">
+              Reviewing company signals and business context.
+            </p>
+          </div>
 
-                <%= f.email_field :email,
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
-
-              <div>
-                <%= f.label :phone,
-                  class: "mb-2 block text-sm font-semibold text-slate-700" %>
-
-                <%= f.telephone_field :phone,
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
+          <div class="mt-8 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-sm border border-brand-100 bg-brand-50 p-4">
+              <%= lucide_icon "building-2", class: "mx-auto h-6 w-6 text-brand-900" %>
+              <p class="mt-3 text-sm font-semibold text-brand-900">Checking industry</p>
             </div>
 
-            <div>
-              <%= f.label :company_name,
-                class: "mb-2 block text-sm font-semibold text-slate-700" %>
-
-              <%= f.text_field :company_name,
-                class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
+            <div class="rounded-sm border border-brand-100 bg-brand-50 p-4">
+              <%= lucide_icon "database", class: "mx-auto h-6 w-6 text-brand-900" %>
+              <p class="mt-3 text-sm font-semibold text-brand-900">Searching buyer database</p>
             </div>
 
-            <div>
-              <%= f.label :company_website,
-                "Company Website",
-                class: "mb-2 block text-sm font-semibold text-slate-700" %>
-
-              <%= f.url_field :company_website,
-                class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
+            <div class="rounded-sm border border-brand-100 bg-brand-50 p-4">
+              <%= lucide_icon "network", class: "mx-auto h-6 w-6 text-brand-900" %>
+              <p class="mt-3 text-sm font-semibold text-brand-900">Matching acquirers</p>
             </div>
-
-            <div class="grid gap-5 sm:grid-cols-2">
-              <div>
-                <%= f.label :company_type,
-                  class: "mb-2 block text-sm font-semibold text-slate-700" %>
-
-                <%= f.select :company_type,
-                  ["SaaS", "MSP / IT Services", "Telecom", "Digital Media", "Cybersecurity", "Other"],
-                  {},
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
-
-              <div>
-                <%= f.label :revenue_range,
-                  class: "mb-2 block text-sm font-semibold text-slate-700" %>
-
-                <%= f.select :revenue_range,
-                  ["Under $1M", "$1M - $5M", "$5M - $25M", "$25M+"],
-                  {},
-                  class: "w-full rounded-2xl border border-slate-300 px-4 py-3" %>
-              </div>
-            </div>
-
-            <%= f.submit "Generate BuyerMap",
-              class: "w-full rounded-full bg-brand-900 px-6 py-4 text-sm font-bold text-white hover:bg-slate-800" %>
-
-          <% end %>
+          </div>
         </div>
       </div>
+
+     <!-- STEP 4: RESULTS + GATED FORM -->
+<div data-buyer-map-target="resultsStep" class="hidden">
+  <div class="mx-auto max-w-6xl">
+    <p class="text-lg text-slate-600">
+      Turn buyer interest into real offers
+    </p>
+
+    <h2 class="mt-4 max-w-4xl font-serif text-5xl font-medium leading-tight text-brand-900">
+      <span data-buyer-map-target="buyerCount">475</span> buyers are searching for a business like
+      <span data-buyer-map-target="companyName" class="text-brand-900">your business</span>
+    </h2>
+
+    <button
+      type="button"
+      class="mt-8 w-full rounded-sm bg-brand-900 px-6 py-4 text-sm font-bold text-white transition hover:bg-brand-500">
+      Get Connected
+    </button>
+
+    <!-- Visible Buyer Cards -->
+    <div class="mt-12 space-y-8">
+      <% [
+        [
+          "vcita",
+          "Google for Startups, Mastercard, Forestay Capital",
+          "vcita acquired WiseStamp to expand its small-business CRM, scheduling, and billing capabilities, making it a strong fit for a platform-focused TMT business.",
+          "1"
+        ],
+        [
+          "Market Research",
+          "Axalon Ventures",
+          "SetSchedule has acquired Taskable and Rentastic to enhance its CRM and productivity toolkit, indicating appetite for workflow and business management platforms.",
+          "1"
+        ],
+        [
+          "Ziff",
+          "Private technology investors",
+          "Ziff Davis has repeatedly acquired cloud-based business communication and SaaS solutions, showing a pattern of expanding its technology portfolio through acquisitions.",
+          "49"
+        ]
+      ].each do |name, backed_by, rationale, acquisitions| %>
+
+        <div class="rounded-sm border border-brand-100 bg-white p-7 shadow-soft">
+          <h3 class="font-serif text-3xl font-medium text-brand-900">
+            <%= name %>
+          </h3>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Backed By: <%= backed_by %>
+          </p>
+
+          <p class="mt-4 text-base leading-7 text-slate-700">
+            <%= rationale %>
+          </p>
+
+          <div class="mt-6 space-y-3">
+            <details class="group rounded-sm bg-brand-50 px-5 py-4">
+              <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-slate-700">
+                <span class="flex items-center gap-3">
+                  <%= lucide_icon "list", class: "h-4 w-4 text-brand-900" %>
+                  Company Details
+                </span>
+
+                <%= lucide_icon "chevron-down", class: "h-4 w-4 transition group-open:rotate-180" %>
+              </summary>
+
+              <p class="mt-3 text-sm leading-6 text-slate-600">
+                Potential buyer fit based on sector focus, acquisition history, buyer type, and strategic expansion pattern.
+              </p>
+            </details>
+
+            <details class="group rounded-sm bg-brand-50 px-5 py-4">
+              <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-slate-700">
+                <span class="flex items-center gap-3">
+                  <%= lucide_icon "history", class: "h-4 w-4 text-brand-900" %>
+                  Recent Acquisitions (<%= acquisitions %>)
+                </span>
+
+                <%= lucide_icon "chevron-down", class: "h-4 w-4 transition group-open:rotate-180" %>
+              </summary>
+
+              <p class="mt-3 text-sm leading-6 text-slate-600">
+                Acquisition activity suggests this buyer may be actively expanding in related TMT markets.
+              </p>
+            </details>
+          </div>
+        </div>
+
+      <% end %>
+    </div>
+
+    <!-- Blurred Locked Section -->
+    <div class="relative mt-12 overflow-hidden rounded-sm">
+      <div class="space-y-8 blur-md">
+        <% [
+          ["Cloud Services Consolidator", "PE-backed platform"],
+          ["Telecom Rollup Group", "Strategic acquirer"],
+          ["Cybersecurity PlatformCo", "PE-backed buyer"]
+        ].each do |name, type| %>
+
+          <div class="rounded-sm border border-brand-100 bg-white p-7 shadow-soft">
+            <h3 class="font-serif text-3xl font-medium text-brand-900">
+              <%= name %>
+            </h3>
+
+            <p class="mt-1 text-sm text-slate-500">
+              Backed By: <%= type %>
+            </p>
+
+            <p class="mt-4 text-base leading-7 text-slate-700">
+              Additional buyer rationale and acquisition history available after review.
+            </p>
+
+            <div class="mt-6 space-y-3">
+              <div class="rounded-sm bg-brand-50 px-5 py-4 text-sm font-semibold text-slate-700">
+                Company Details
+              </div>
+              <div class="rounded-sm bg-brand-50 px-5 py-4 text-sm font-semibold text-slate-700">
+                Recent Acquisitions
+              </div>
+            </div>
+          </div>
+
+        <% end %>
+      </div>
+
+      <!-- Small Form Overlay -->
+      <div class="absolute inset-x-0 top-12 flex justify-center px-4">
+        <div class="w-full max-w-md rounded-sm bg-brand-900 p-7 text-white shadow-soft">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-300">
+            Claim your free M&A expert session
+          </p>
+
+          <h3 class="mt-3 font-serif text-3xl font-medium text-white">
+            Take the first step today.
+          </h3>
+
+          <p class="mt-2 text-sm leading-6 text-white/70">
+            Turn buyer interest into competing offers and get acquired on better terms.
+          </p>
+
+          <div class="mt-5 space-y-3">
+            <%= f.text_field :first_name,
+              placeholder: "Full Name",
+              class: "w-full rounded-sm border-0 bg-white px-4 py-3 text-sm text-brand-900" %>
+
+            <%= f.email_field :email,
+              placeholder: "Email Address",
+              class: "w-full rounded-sm border-0 bg-white px-4 py-3 text-sm text-brand-900" %>
+
+            <%= f.telephone_field :phone,
+              placeholder: "Mobile Number",
+              class: "w-full rounded-sm border-0 bg-white px-4 py-3 text-sm text-brand-900" %>
+
+            <%= f.select :message,
+              ["When are you looking to sell?", "Immediately", "3-6 months", "6-12 months", "Just exploring"],
+              {},
+              class: "w-full rounded-sm border-0 bg-white px-4 py-3 text-sm text-brand-900" %>
+
+            <%= f.submit "Get Started for Free",
+              class: "w-full rounded-sm bg-brand-300 px-5 py-3 text-sm font-bold text-brand-900 transition hover:bg-white" %>
+          </div>
+
+          <p class="mt-4 text-center text-xs text-white/60">
+            No commitment, just a 15 minute chat.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <% end %>
+  </div>
+</section>
+
+<section class="bg-brand-50 py-24 sm:py-28">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <h2 class="font-serif text-4xl font-medium text-brand-900 sm:text-5xl">
+        How it works
+      </h2>
+
+      <p class="max-w-md text-sm leading-6 text-slate-600">
+        Get a preliminary BuyerMap in a few simple steps.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+
+      <!-- Card 1 -->
+      <div class="overflow-hidden rounded-sm border border-brand-100 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+
+        <div class="bg-[#F8F5F0] p-6">
+          <img
+            src="<%= asset_path('buyer-step-1.svg') %>"
+            class="h-44 w-full object-contain"
+            alt="Enter URL">
+        </div>
+
+        <div class="p-8">
+          <h3 class="font-serif text-3xl font-medium text-brand-900">
+            Enter your URL
+          </h3>
+
+          <p class="mt-3 text-sm leading-6 text-slate-600">
+            Start with your company website so BuyerMap can understand your business context.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="overflow-hidden rounded-sm border border-brand-100 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+
+        <div class="bg-[#F8F5F0] p-6">
+          <img
+            src="<%= asset_path('buyer-step-3.svg') %>"
+            class="h-44 w-full object-contain"
+            alt="Company Size">
+        </div>
+
+        <div class="p-8">
+          <h3 class="font-serif text-3xl font-medium text-brand-900">
+            Select company size
+          </h3>
+
+          <p class="mt-3 text-sm leading-6 text-slate-600">
+            Add revenue and profit range to improve buyer matching accuracy.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="overflow-hidden rounded-sm border border-brand-100 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+
+        <div class="bg-[#F8F5F0] p-6">
+          <img
+            src="<%= asset_path('buyer-step-2.svg') %>"
+            class="h-44 w-full object-contain"
+            alt="Matched Buyers">
+        </div>
+
+        <div class="p-8">
+          <h3 class="font-serif text-3xl font-medium text-brand-900">
+            See matched buyers
+          </h3>
+
+          <p class="mt-3 text-sm leading-6 text-slate-600">
+            Preview likely buyer categories and request the full BuyerMap.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<section class="overflow-hidden bg-white py-24 sm:py-28">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+    <div class="mx-auto max-w-5xl text-center">
+      <h2 class="font-serif text-4xl font-medium leading-tight text-brand-900 sm:text-5xl lg:text-6xl">
+        22,000+ owners already discovered potential buyers
+        <br>
+        <span class="text-brand-300">with AcquireTMT</span>
+      </h2>
+
+      <p class="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+        Discover how many buyers may be waiting for businesses like yours.
+      </p>
+    </div>
+
+    <!-- Top row -->
+    <div class="mt-16 overflow-hidden">
+      <div class="flex w-max animate-marquee-left gap-6">
+        <% [
+          ["SaaS platform", "Austin, TX", "482", "monitor"],
+          ["HVAC company", "San Antonio, TX", "210", "fan"],
+          ["Masonry company", "Des Moines, IA", "514", "brick-wall"],
+          ["Foundation repair", "Charlotte, NC", "490", "hard-hat"],
+          ["Telecom services", "Dallas, TX", "524", "radio-tower"],
+          ["Cybersecurity firm", "Boston, MA", "507", "shield-check"]
+        ].cycle.take(12).each do |business, location, buyers, icon| %>
+
+          <div class="flex min-w-[420px] items-center justify-between rounded-sm border border-brand-100 bg-white p-6 shadow-soft">
+            <div class="flex items-center gap-5">
+              <div class="flex h-14 w-14 items-center justify-center rounded-sm bg-brand-50">
+                <%= lucide_icon icon, class: "h-7 w-7 text-brand-900" %>
+              </div>
+
+              <div>
+                <h3 class="font-serif text-3xl font-medium text-brand-900">
+                  <%= business %>
+                </h3>
+
+                <p class="mt-1 text-base text-slate-600">
+                  <%= location %>
+                </p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <p class="font-serif text-3xl font-medium text-brand-900">
+                <%= buyers %>
+              </p>
+
+              <p class="text-sm text-slate-600">
+                Buyers Found
+              </p>
+            </div>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="mt-6 overflow-hidden">
+      <div class="flex w-max animate-marquee-right gap-6">
+        <% [
+          ["MSP business", "Denver, CO", "391", "server"],
+          ["Cleaning services", "Las Vegas, NV", "503", "sparkles"],
+          ["Cloud infrastructure", "Seattle, WA", "438", "cloud"],
+          ["Digital agency", "Miami, FL", "276", "palette"],
+          ["Data analytics company", "Chicago, IL", "447", "chart-column"],
+          ["Managed telecom", "Phoenix, AZ", "368", "phone-call"]
+        ].cycle.take(12).each do |business, location, buyers, icon| %>
+
+          <div class="flex min-w-[420px] items-center justify-between rounded-sm border border-brand-100 bg-white p-6 shadow-soft">
+            <div class="flex items-center gap-5">
+              <div class="flex h-14 w-14 items-center justify-center rounded-sm bg-brand-50">
+                <%= lucide_icon icon, class: "h-7 w-7 text-brand-900" %>
+              </div>
+
+              <div>
+                <h3 class="font-serif text-3xl font-medium text-brand-900">
+                  <%= business %>
+                </h3>
+
+                <p class="mt-1 text-base text-slate-600">
+                  <%= location %>
+                </p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <p class="font-serif text-3xl font-medium text-brand-900">
+                <%= buyers %>
+              </p>
+
+              <p class="text-sm text-slate-600">
+                Buyers Found
+              </p>
+            </div>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Dark CTA box -->
+    <div class="mx-auto mt-20 max-w-5xl rounded-sm bg-brand-900 p-8 text-white shadow-soft sm:p-10">
+      <h3 class="font-serif text-4xl font-medium text-white">
+        Preview potential buyers, for free
+      </h3>
+      <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+  <input
+    type="url"
+    placeholder="www.mybusiness.com"
+    class="flex-1 rounded-sm border border-white/10 bg-white px-5 py-4 text-base text-brand-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300">
+
+  <a href="#"
+    class="inline-flex items-center justify-center rounded-sm bg-brand-300 px-8 py-4 text-sm font-bold text-brand-900 transition hover:bg-white">
+    Find buyers
+  </a>
+</div>
+
+
+    </div>
+
+  </div>
+</section>
+<section class="bg-brand-50 py-24 sm:py-28">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div>
+      <h2 class="font-serif text-4xl font-medium text-brand-900 sm:text-5xl">
+        FAQs
+      </h2>
+
+      <p class="mt-3 text-sm leading-6 text-slate-600">
+        Answers to frequently asked questions.
+      </p>
+    </div>
+
+    <div class="mt-12 divide-y divide-brand-100 border-y border-brand-100">
+      <% [
+        [
+          "How does AcquireTMT access buyer information?",
+          "BuyerMap uses a combination of buyer categories, acquisition patterns, market signals, and internal research to create a preliminary buyer universe. In V1, results are simulated for the preview experience and will later be replaced with real buyer data."
+        ],
+        [
+          "Is this really free?",
+          "Yes. The preliminary BuyerMap preview is free. If you want a full buyer universe or advisory support, AcquireTMT may follow up to discuss the next step."
+        ],
+        [
+          "Will buyers or competitors know I’m looking to sell?",
+          "No. Your information is treated confidentially. Buyer outreach only happens after a proper review and approval process."
+        ],
+        [
+          "What information will I receive about buyers?",
+          "You can receive buyer categories, company names, buyer rationale, acquisition history, and why each buyer may be relevant to your business."
+        ],
+        [
+          "Do I need to be ready to sell now?",
+          "No. Many owners start by exploring buyer interest, valuation context, and exit readiness before deciding whether to formally launch a process."
+        ]
+      ].each do |question, answer| %>
+
+        <details class="group py-6">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-6">
+            <h3 class="font-serif text-2xl font-medium text-brand-900">
+              <%= question %>
+            </h3>
+
+            <span class="shrink-0 transition group-open:rotate-45">
+              <%= lucide_icon "plus", class: "h-5 w-5 text-brand-900" %>
+            </span>
+          </summary>
+
+          <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">
+            <%= answer %>
+          </p>
+        </details>
+
+      <% end %>
     </div>
   </div>
 </section>
