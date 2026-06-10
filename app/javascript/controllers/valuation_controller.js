@@ -21,7 +21,8 @@ export default class extends Controller {
     "stepList",
     "stepOneIndicator",
     "stepTwoIndicator",
-    "stepThreeIndicator"
+    "stepThreeIndicator",
+    "ctaWebsiteInput"
   ]
 
   connect() {
@@ -190,4 +191,31 @@ export default class extends Controller {
       return "Your Business"
     }
   }
+
+  startFromCta(event) {
+  event.preventDefault()
+
+  const website = this.ctaWebsiteInputTarget.value.trim()
+
+  if (!website) {
+    alert("Please enter your company website.")
+    return
+  }
+
+  this.websiteInputTarget.value = website
+
+  this.companyNameTargets.forEach((target) => {
+    target.textContent = this.extractCompanyName(website)
+  })
+
+  this.websiteStepTarget.classList.add("hidden")
+  this.loadingStepTarget.classList.add("hidden")
+  this.reportStepTarget.classList.add("hidden")
+  this.financialStepTarget.classList.remove("hidden")
+
+  document.getElementById("valuation-tool")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  })
+}
 }

@@ -1,5 +1,6 @@
-<section class="min-h-screen bg-brand-50 py-24 sm:py-28">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-controller="valuation">
+<div data-controller="valuation">
+<section id="valuation-tool" class="min-h-screen bg-brand-50 py-24 sm:py-28">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" >
 
     <%= form_with model: Lead.new, url: leads_path do |f| %>
       <%= f.hidden_field :source, value: "valuation_snapshot" %>
@@ -540,7 +541,7 @@
     </div>
   </div>
 </section>
-<section class="bg-white py-24 sm:py-28 data-controller="carousel">
+<section class="bg-white py-24 sm:py-28" data-controller="carousel">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
     <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
@@ -663,14 +664,16 @@
 
       <div class="mt-6 flex flex-col gap-3 sm:flex-row">
         <input
-          type="url"
-          placeholder="Company website URL"
-          class="flex-1 rounded-sm border border-white/10 bg-white px-5 py-4 text-sm text-brand-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300">
-
-        <a href="#"
-          class="inline-flex items-center justify-center rounded-sm bg-brand-300 px-8 py-4 text-sm font-bold text-brand-900 hover:bg-white">
-          Generate Report
-        </a>
+  type="url"
+  placeholder="Company website URL"
+  data-valuation-target="ctaWebsiteInput"
+  class="flex-1 rounded-sm border border-white/10 bg-white px-5 py-4 text-sm text-brand-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300">
+        <button
+  type="button"
+  data-action="click->valuation#startFromCta"
+  class="inline-flex items-center justify-center rounded-sm bg-brand-300 px-8 py-4 text-sm font-bold text-brand-900 transition hover:bg-white">
+  Generate Report
+</button>
       </div>
     </div>
   </div>
@@ -702,3 +705,4 @@
     </div>
   </div>
 </section>
+</div>

@@ -8,6 +8,7 @@ export default class extends Controller {
     "resultsStep",
     "detailsStep",
     "websiteInput",
+    "ctaWebsiteInput",
     "websitePreview",
     "companyName",
     "progressBar",
@@ -30,9 +31,15 @@ export default class extends Controller {
 
   showFinancials(event) {
     event.preventDefault()
+    this.openFinancialStep(this.websiteInputTarget.value.trim())
+  }
 
-    const website = this.websiteInputTarget.value.trim()
+  startFromCta(event) {
+    event.preventDefault()
+    this.openFinancialStep(this.ctaWebsiteInputTarget.value.trim())
+  }
 
+  openFinancialStep(website) {
     if (!website) {
       alert("Please enter your company website.")
       return
@@ -40,13 +47,22 @@ export default class extends Controller {
 
     const name = this.extractCompanyName(website)
 
+    this.websiteInputTarget.value = website
     this.websitePreviewTarget.textContent = website
+
     this.companyNameTargets.forEach((target) => {
       target.textContent = name
     })
 
     this.websiteStepTarget.classList.add("hidden")
+    this.loadingStepTarget.classList.add("hidden")
+    this.resultsStepTarget.classList.add("hidden")
     this.financialStepTarget.classList.remove("hidden")
+
+    document.getElementById("buyer-map-tool")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    })
   }
 
   startLoading(event) {
@@ -96,7 +112,6 @@ export default class extends Controller {
     }, 400)
   }
 
-  
   backToWebsite(event) {
     event.preventDefault()
 
