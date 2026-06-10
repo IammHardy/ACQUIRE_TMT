@@ -22,7 +22,8 @@ export default class extends Controller {
     "stepOneIndicator",
     "stepTwoIndicator",
     "stepThreeIndicator",
-    "ctaWebsiteInput"
+    "ctaWebsiteInput",
+    "attemptCounter"
   ]
 
   connect() {
@@ -33,8 +34,36 @@ export default class extends Controller {
       ["Estimating valuation range", "Combining revenue, profit, and buyer demand signals."],
       ["Preparing report", "Building your preliminary valuation snapshot."]
     ]
+    this.maxAttempts = 2
+this.storageKey = "valuation_attempts"
+this.updateAttemptCounter()
   }
 
+  getAttempts() {
+  return Number(localStorage.getItem(this.storageKey) || 0)
+}
+
+setAttempts(count) {
+  localStorage.setItem(this.storageKey, count)
+  this.updateAttemptCounter()
+}
+
+updateAttemptCounter() {
+  if (!this.hasAttemptCounterTarget) return
+
+  const attempts = this.getAttempts()
+  const displayCount = Math.min(attempts + 1, this.maxAttempts)
+
+  this.attemptCounterTarget.textContent = `${displayCount}/${this.maxAttempts}`
+}
+
+canRunSearch() {
+  return this.getAttempts() < this.maxAttempts
+}
+
+recordAttempt() {
+  this.setAttempts(this.getAttempts() + 1)
+}
   showFinancials(event) {
     event.preventDefault()
 
@@ -45,12 +74,20 @@ export default class extends Controller {
       return
     }
 
+    if (!this.canRunSearch()) {
+  alert("You’ve reached the free valuation preview limit. Please book a call to continue.")
+  return
+}
+
+this.recordAttempt()
     this.companyNameTargets.forEach((target) => {
       target.textContent = this.extractCompanyName(website)
     })
 
     this.websiteStepTarget.classList.add("hidden")
     this.financialStepTarget.classList.remove("hidden")
+
+    
   }
 
   startReport(event) {

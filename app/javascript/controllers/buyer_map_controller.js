@@ -15,7 +15,8 @@ export default class extends Controller {
     "progressText",
     "loadingTitle",
     "loadingDescription",
-    "buyerCount"
+    "buyerCount",
+    "attemptCounter"
   ]
 
   connect() {
@@ -27,7 +28,36 @@ export default class extends Controller {
       ["Finding potential buyers", "Matching buyer categories to your company profile."],
       ["Preparing BuyerMap", "Generating your preliminary buyer universe preview."]
     ]
+    this.maxAttempts = 2
+this.storageKey = "buyer_map_attempts"
+this.updateAttemptCounter()
   }
+
+  getAttempts() {
+  return Number(localStorage.getItem(this.storageKey) || 0)
+}
+
+setAttempts(count) {
+  localStorage.setItem(this.storageKey, count)
+  this.updateAttemptCounter()
+}
+
+updateAttemptCounter() {
+  if (!this.hasAttemptCounterTarget) return
+
+  const attempts = this.getAttempts()
+  const displayCount = Math.min(attempts + 1, this.maxAttempts)
+
+  this.attemptCounterTarget.textContent = `${displayCount}/${this.maxAttempts}`
+}
+
+canRunSearch() {
+  return this.getAttempts() < this.maxAttempts
+}
+
+recordAttempt() {
+  this.setAttempts(this.getAttempts() + 1)
+}
 
   showFinancials(event) {
     event.preventDefault()
@@ -44,6 +74,13 @@ export default class extends Controller {
       alert("Please enter your company website.")
       return
     }
+
+    if (!this.canRunSearch()) {
+  alert("You’ve reached the free BuyerMap preview limit. Please book a call to continue.")
+  return
+}
+
+this.recordAttempt()
 
     const name = this.extractCompanyName(website)
 

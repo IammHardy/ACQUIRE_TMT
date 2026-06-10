@@ -53,7 +53,9 @@
                 Now, let’s get some basic financial data
               </h2>
 
-              <span class="font-serif text-2xl text-brand-900">2/2</span>
+              <span data-valuation-target="attemptCounter" class="font-serif text-2xl text-brand-900">
+  1/2
+</span>
             </div>
 
             <div class="mt-8 border-t border-brand-100 pt-8">
@@ -514,33 +516,6 @@
     <% end %>
   </div>
 </section>
-<section class="bg-white py-24 sm:py-28">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-4xl text-center">
-      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">
-        What you get
-      </p>
-
-      <h2 class="mt-5 font-serif text-4xl font-medium text-brand-900 sm:text-5xl">
-        A clearer view of what your TMT business may be worth.
-      </h2>
-    </div>
-
-    <div class="mt-14 grid gap-px overflow-hidden rounded-sm bg-brand-100 sm:grid-cols-2 lg:grid-cols-4">
-      <% [
-        ["Valuation Range", "A preliminary estimate based on revenue, profit, multiples, and market context."],
-        ["Deal Comps", "Relevant transaction examples and comparable business activity."],
-        ["Value Drivers", "Factors that may increase or reduce valuation in a buyer process."],
-        ["Advisor Review", "A path to discuss your valuation with an AcquireTMT advisor."]
-      ].each do |title, description| %>
-        <div class="bg-white p-7 hover-lift">
-          <h3 class="font-serif text-2xl font-medium text-brand-900"><%= title %></h3>
-          <p class="mt-3 text-sm leading-6 text-slate-600"><%= description %></p>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</section>
 <section class="bg-white py-24 sm:py-28" data-controller="carousel">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
@@ -686,23 +661,43 @@
     </h2>
 
     <div class="mt-12 divide-y divide-brand-100 border-y border-brand-100">
-      <% [
-        ["Is this a formal valuation?", "No. This is a preliminary valuation snapshot designed to help owners understand potential value drivers before a formal process."],
-        ["What affects my valuation?", "Revenue quality, EBITDA, recurring revenue, customer concentration, growth profile, contracts, market demand, and buyer interest can all affect valuation."],
-        ["Do I need to be ready to sell?", "No. Many owners use valuation snapshots to understand options before deciding whether to pursue a sale process."],
-        ["Is my information confidential?", "Yes. Information submitted through AcquireTMT is treated confidentially and is not shared with buyers without approval."]
-      ].each do |question, answer| %>
-        <details class="group py-6">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-6">
-            <h3 class="font-serif text-2xl font-medium text-brand-900"><%= question %></h3>
-            <span class="shrink-0 transition group-open:rotate-45">
-              <%= lucide_icon "plus", class: "h-5 w-5 text-brand-900" %>
-            </span>
-          </summary>
-          <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600"><%= answer %></p>
-        </details>
-      <% end %>
-    </div>
+  <% [
+    [
+      "How does AcquireTMT value my business?",
+      "Our AI-assisted valuation engine analyzes your company website to understand your business model, products, positioning, and customer profile. It then compares your company against similar TMT businesses using historical transaction signals, market benchmarks, and buyer demand patterns. We also evaluate value drivers such as recurring revenue, margins, customer concentration, and growth profile to generate a personalized valuation snapshot."
+    ],
+    [
+      "Where does the valuation data come from?",
+      "AcquireTMT draws from proprietary market intelligence, historical M&A transaction signals, comparable deal activity, and buyer demand patterns across technology, media, telecom, and digital infrastructure businesses. Each valuation combines company-specific inputs with relevant market context to provide a more informed preliminary view."
+    ],
+    [
+      "What are valuation multiples?",
+      "Valuation multiples are ratios used to estimate how much a business may be worth based on recent sales of similar companies. Buyers often evaluate businesses using revenue, EBITDA, or seller earnings multiples depending on the company profile, recurring revenue quality, growth, and market demand. Multiples help benchmark how businesses of similar size and performance are valued in the market."
+    ],
+    [
+      "What happens after I see my valuation?",
+      "Your valuation snapshot is completely free and designed to help you better understand your options — whether you're actively considering a sale or simply planning ahead. If you'd like deeper insight, you can request a complimentary 15-minute strategy session with an AcquireTMT advisor to discuss valuation, market positioning, and potential next steps."
+    ]
+  ].each do |question, answer| %>
+
+    <details class="group py-6">
+      <summary class="flex cursor-pointer list-none items-center justify-between gap-6">
+        <h3 class="font-serif text-2xl font-medium text-brand-900">
+          <%= question %>
+        </h3>
+
+        <span class="shrink-0 transition group-open:rotate-45">
+          <%= lucide_icon "plus", class: "h-5 w-5 text-brand-900" %>
+        </span>
+      </summary>
+
+      <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">
+        <%= answer %>
+      </p>
+    </details>
+
+  <% end %>
+</div>
   </div>
 </section>
 </div>
