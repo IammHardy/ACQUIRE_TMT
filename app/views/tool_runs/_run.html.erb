@@ -1,0 +1,28 @@
+<% r = run.result || {} %>
+<% a = run.analysis || {} %>
+<div class="rounded-sm border border-brand-100 bg-brand-50 p-5">
+  <div class="flex items-center justify-between gap-4">
+    <p class="font-bold text-brand-900"><%= run.tool_type.humanize %></p>
+    <p class="text-xs text-slate-500"><%= run.created_at.strftime("%d %b %Y") %></p>
+  </div>
+
+  <p class="mt-1 text-sm text-slate-600">
+    <%= run.website.presence || "—" %><% if (n = r["industry_name"] || a["industry_name"]).present? %> · <%= n %><% end %>
+  </p>
+
+  <% case run.tool_type %>
+  <% when "valuation" %>
+    <p class="mt-3 font-serif text-2xl font-medium text-brand-900">
+      <%= number_to_currency(r["low"].to_i, precision: 0) %> – <%= number_to_currency(r["high"].to_i, precision: 0) %>
+    </p>
+    <% if r["size_band"].present? %><p class="text-xs text-slate-500"><%= r["size_band"] %></p><% end %>
+  <% when "market_comps" %>
+    <p class="mt-3 text-sm text-slate-700">
+      <%= r["listings_count"] %> comps · median <%= r["median_price_revenue"] %>× revenue / <%= r["median_price_cash_flow"] %>× cash flow
+    </p>
+  <% when "buyer_map" %>
+    <p class="mt-3 text-sm text-slate-700">
+      <%= r["buyer_count"] %> active acquirers · <%= r["acquisitions_last_year"] %> acquisitions in 2025
+    </p>
+  <% end %>
+</div>

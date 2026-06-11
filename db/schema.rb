@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_11_130002) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_11_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,9 +90,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_130002) do
     t.bigint "lead_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["lead_id"], name: "index_tool_runs_on_lead_id"
     t.index ["status"], name: "index_tool_runs_on_status"
     t.index ["tool_type"], name: "index_tool_runs_on_tool_type"
+    t.index ["user_id"], name: "index_tool_runs_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -107,4 +109,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_130002) do
 
   add_foreign_key "sessions", "users"
   add_foreign_key "tool_runs", "leads"
+  add_foreign_key "tool_runs", "users"
 end

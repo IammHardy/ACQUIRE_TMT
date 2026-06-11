@@ -178,6 +178,11 @@ class Public::ToolsController < ApplicationController
   def track_tool_run(run)
     return unless run&.persisted?
 
+    # Public controller doesn't auto-resume the session; do it so a logged-in
+    # seller's runs attach to their account immediately.
+    resume_session
+    run.update_column(:user_id, Current.user.id) if Current.user
+
     ids = Array(session[:tool_run_ids]) + [run.id]
     session[:tool_run_ids] = ids.uniq.last(10)
   end
