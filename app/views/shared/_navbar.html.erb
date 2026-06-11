@@ -1,3 +1,36 @@
+<%
+  # Top-level menu structure mirrors OffDeal's nav (Services · Industries ·
+  # Tools · Company · Media + Get Started), mapped onto our own pages.
+  industries = [
+    ["SaaS", "saas"],
+    ["MSP / IT Services", "msp-it-services"],
+    ["Telecom & Connectivity", "telecom-connectivity"],
+    ["Digital Media", "digital-media"],
+    ["Cybersecurity", "cybersecurity"],
+    ["Data, Analytics & AI", "data-analytics-ai"],
+    ["Cloud Infrastructure", "cloud-infrastructure"],
+    ["AdTech / MarTech", "adtech-martech"]
+  ]
+
+  nav_menus = [
+    { label: "Services", items: [
+      ["Sell a Business", sell_path],
+      ["Find Buyers", buyers_path]
+    ] },
+    { label: "Industries", items: industries.map { |name, slug| [name, industry_path(slug)] } },
+    { label: "Tools", items: [
+      ["Business Valuation", tools_valuation_path],
+      ["Market Comps", tools_market_comps_path],
+      ["Find Buyers — BuyerMap", tools_find_buyers_path]
+    ] },
+    { label: "Company", items: [
+      ["About", about_path],
+      ["Contact", contact_path]
+    ] },
+    { label: "Media", path: insights_path }
+  ]
+%>
+
 <header class="sticky top-0 z-50 border-b border-white/10 bg-brand-900/95 text-white backdrop-blur">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-controller="mobile-menu">
     <div class="flex h-16 items-center justify-between">
@@ -5,18 +38,32 @@
         AcquireTMT
       <% end %>
 
-      <nav class="hidden items-center gap-8 text-sm font-semibold text-white/80 lg:flex">
-        <%= link_to "Sell", sell_path, class: "hover:text-brand-300" %>
-        <%= link_to "Buy", buyers_path, class: "hover:text-brand-300" %>
-        <%= link_to "Tools", tools_find_buyers_path, class: "hover:text-brand-300" %>
-        <%= link_to "Industries", industry_path("saas"), class: "hover:text-brand-300" %>
-        <%= link_to "Insights", insights_path, class: "hover:text-brand-300" %>
-        <%= link_to "About", about_path, class: "hover:text-brand-300" %>
-        <%= link_to "Admin", admin_leads_path, class: "hover:text-brand-300" %>
+      <nav class="hidden items-center gap-7 text-sm font-semibold text-white/80 lg:flex">
+        <% nav_menus.each do |menu| %>
+          <% if menu[:items] %>
+            <div class="group relative">
+              <button type="button" class="flex items-center gap-1 py-5 transition hover:text-brand-300">
+                <%= menu[:label] %>
+                <%= lucide_icon "chevron-down", class: "h-4 w-4 transition group-hover:rotate-180" %>
+              </button>
+
+              <div class="invisible absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-2 opacity-0 transition duration-150 group-hover:visible group-hover:opacity-100">
+                <div class="overflow-hidden rounded-sm border border-brand-100 bg-white py-2 shadow-soft">
+                  <% menu[:items].each do |label, path| %>
+                    <%= link_to label, path,
+                      class: "block px-5 py-2.5 text-sm font-semibold text-brand-900 transition hover:bg-brand-50 hover:text-brand-500" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <%= link_to menu[:label], menu[:path], class: "py-5 transition hover:text-brand-300" %>
+          <% end %>
+        <% end %>
       </nav>
 
-      <%= link_to "Find Buyers", tools_find_buyers_path,
-        class: "hidden rounded-sm bg-brand-300 px-5 py-2.5 text-sm font-bold text-brand-900 hover:bg-white lg:inline-flex" %>
+      <%= link_to "Get Started", tools_valuation_path,
+        class: "hidden rounded-sm bg-brand-300 px-5 py-2.5 text-sm font-bold text-brand-900 transition hover:bg-white lg:inline-flex" %>
 
       <button type="button"
         class="rounded-sm border border-white/20 p-2 text-white lg:hidden"
@@ -27,27 +74,27 @@
     </div>
 
     <div class="hidden border-t border-white/10 py-4 lg:hidden" data-mobile-menu-target="menu">
-      <nav class="flex flex-col gap-2 text-sm font-semibold text-white/80">
-        <% [
-          ["Sell", sell_path, "briefcase-business"],
-          ["Buy", buyers_path, "users"],
-          ["Tools", tools_find_buyers_path, "search"],
-          ["Industries", industry_path("saas"), "building-2"],
-          ["Insights", insights_path, "book-open"],
-          ["About", about_path, "info"],
-          ["Admin", admin_leads_path, "layout-dashboard"]
-        ].each do |label, path, icon| %>
-          <%= link_to path, class: "flex items-center gap-3 rounded-sm px-3 py-3 hover:bg-white/10 hover:text-brand-300" do %>
-            <%= lucide_icon icon, class: "h-5 w-5 text-brand-300" %>
-            <span><%= label %></span>
+      <nav class="flex flex-col gap-1 text-sm font-semibold text-white/80">
+        <% nav_menus.each do |menu| %>
+          <% if menu[:items] %>
+            <details class="group rounded-sm">
+              <summary class="flex cursor-pointer list-none items-center justify-between rounded-sm px-3 py-3 hover:bg-white/10 hover:text-brand-300">
+                <span><%= menu[:label] %></span>
+                <%= lucide_icon "chevron-down", class: "h-4 w-4 transition group-open:rotate-180" %>
+              </summary>
+              <div class="mb-1 ml-3 flex flex-col gap-1 border-l border-white/10 pl-3">
+                <% menu[:items].each do |label, path| %>
+                  <%= link_to label, path, class: "rounded-sm px-3 py-2 text-white/70 hover:bg-white/10 hover:text-brand-300" %>
+                <% end %>
+              </div>
+            </details>
+          <% else %>
+            <%= link_to menu[:label], menu[:path], class: "rounded-sm px-3 py-3 hover:bg-white/10 hover:text-brand-300" %>
           <% end %>
         <% end %>
 
-        <%= link_to tools_find_buyers_path,
-          class: "mt-3 flex items-center justify-center gap-2 rounded-sm bg-brand-300 px-5 py-3 font-bold text-brand-900 hover:bg-white" do %>
-          <%= lucide_icon "search", class: "h-5 w-5" %>
-          <span>Find Buyers</span>
-        <% end %>
+        <%= link_to "Get Started", tools_valuation_path,
+          class: "mt-3 flex items-center justify-center gap-2 rounded-sm bg-brand-300 px-5 py-3 font-bold text-brand-900 hover:bg-white" %>
       </nav>
     </div>
   </div>
