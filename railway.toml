@@ -1,0 +1,8 @@
+# Railway build/deploy config. Build from the Dockerfile; serve on $PORT.
+[build]
+builder = "DOCKERFILE"
+
+[deploy]
+startCommand = "./bin/railway-start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

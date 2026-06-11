@@ -1,0 +1,5 @@
+#!/bin/bash -e
+# Railway entrypoint: prepare the DB (migrate + seed on first boot), then serve
+# on Railway's dynamic $PORT (bypasses Thruster, which expects port 80).
+./bin/rails db:prepare
+exec ./bin/rails server -b 0.0.0.0 -p "${PORT:-3000}"
