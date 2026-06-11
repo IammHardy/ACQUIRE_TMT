@@ -34,4 +34,24 @@ class Buyer < ApplicationRecord
   def type_label
     TYPE_LABELS[buyer_type] || buyer_type
   end
+
+  def website_url
+    return nil if website.blank?
+
+    website.start_with?("http") ? website : "https://#{website}"
+  end
+
+  def domain
+    return nil if website.blank?
+
+    URI.parse(website_url).host&.sub(/\Awww\./, "")
+  rescue URI::InvalidURIError
+    nil
+  end
+
+  # Logo via Google's favicon service (keyless, reliable). Nil if no website.
+  def logo_url
+    d = domain
+    "https://www.google.com/s2/favicons?sz=128&domain=#{d}" if d.present?
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_11_210001) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_11_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -56,6 +56,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_210001) do
     t.string "source_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "website"
     t.index ["buyer_type"], name: "index_buyers_on_buyer_type"
     t.index ["sectors"], name: "index_buyers_on_sectors", using: :gin
   end

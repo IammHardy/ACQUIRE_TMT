@@ -194,8 +194,22 @@ BUYERS = [
     acquisitions_count: 0, source: "U.S. SBA 7(a) program / Live Oak Bank", source_url: "https://www.sba.gov/funding-programs/loans" }
 ].freeze
 
+BUYER_WEBSITES = {
+  "Evergreen Services Group" => "evergreensg.com",
+  "New Charter Technologies" => "newchartertech.com",
+  "Thrive" => "thrivenextgen.com",
+  "Ntiva" => "ntiva.com",
+  "Integris" => "integrisit.com",
+  "Constellation Software" => "csisoftware.com",
+  "Volaris Group" => "volarisgroup.com",
+  "Valsoft" => "valsoftcorp.com",
+  "ESW Capital (Trilogy)" => "eswcapital.com",
+  "Search-fund acquirers (Searchfunder network)" => "searchfunder.com",
+  "SBA 7(a) individual buyers" => "sba.gov"
+}.freeze
+
 Buyer.delete_all
-BUYERS.each { |attrs| Buyer.create!(attrs) }
+BUYERS.each { |attrs| Buyer.create!(attrs.merge(website: BUYER_WEBSITES[attrs[:name]])) }
 
 puts "Seeded #{Buyer.count} active acquirers."
 
