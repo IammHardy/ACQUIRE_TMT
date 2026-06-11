@@ -181,5 +181,9 @@ class Public::IndustriesController < ApplicationController
 
     @slug = params[:slug]
     @network_buyers = Buyer.active.where("? = ANY (sectors)", @slug).order(acquisitions_count: :desc).limit(6)
+
+    # Use the per-industry hero photo when one exists (falls back to gradient).
+    image = "industries/#{@slug}.jpg"
+    @industry = @industry.merge(hero_image: image) if Rails.root.join("app/assets/images", image).exist?
   end
 end
