@@ -63,12 +63,17 @@ module ValuationData
   # typical tech-enabled business. Small end = BizBuySell Main Street reality;
   # large end = Pepperdine lower-middle-market. The sector factor below scales
   # these up or down. `max` is the upper bound of adjusted earnings for the band.
+  #
+  # `weight_factor` scales the sector revenue-weight down for smaller businesses:
+  # buyers of Main Street / owner-operator businesses price on cash flow (SDE),
+  # so the revenue multiple should carry less of the blend there. Only larger
+  # (institutional / growth) businesses get the sector's full revenue weight.
   EARNINGS_BANDS = [
-    { "max" => 250_000,             "mult" => 2.6, "label" => "Main Street (under $250K SDE)" },
-    { "max" => 1_000_000,           "mult" => 3.3, "label" => "Small ($250K–$1M SDE)" },
-    { "max" => 3_000_000,           "mult" => 4.2, "label" => "Lower-mid ($1M–$3M EBITDA)" },
-    { "max" => 10_000_000,          "mult" => 5.3, "label" => "Mid ($3M–$10M EBITDA)" },
-    { "max" => Float::INFINITY,     "mult" => 6.5, "label" => "Upper-mid ($10M+ EBITDA)" }
+    { "max" => 250_000,         "mult" => 2.6, "weight_factor" => 0.50, "label" => "Main Street (under $250K SDE)" },
+    { "max" => 1_000_000,       "mult" => 3.3, "weight_factor" => 0.70, "label" => "Small ($250K–$1M SDE)" },
+    { "max" => 3_000_000,       "mult" => 4.2, "weight_factor" => 0.85, "label" => "Lower-mid ($1M–$3M EBITDA)" },
+    { "max" => 10_000_000,      "mult" => 5.3, "weight_factor" => 1.00, "label" => "Mid ($3M–$10M EBITDA)" },
+    { "max" => Float::INFINITY, "mult" => 6.5, "weight_factor" => 1.00, "label" => "Upper-mid ($10M+ EBITDA)" }
   ].freeze
 
   # Per-sector private-market calibration:

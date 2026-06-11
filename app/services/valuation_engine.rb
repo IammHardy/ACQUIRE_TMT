@@ -37,7 +37,8 @@ class ValuationEngine
   def call
     sector = ValuationData.sector(@industry)
     band = ValuationData.earnings_band(@earnings)
-    w = sector["revenue_weight"]
+    # Smaller businesses lean on earnings, not revenue (size-aware weight).
+    w = (sector["revenue_weight"] * band["weight_factor"]).round(3)
 
     earnings_mult = band["mult"] * sector["earnings_factor"]
     revenue_mult  = sector["revenue_mult"]
