@@ -1,4 +1,111 @@
-<div>
-  <h1 class="font-bold text-4xl">Public::Pages#contact</h1>
-  <p>Find me in app/views/public/pages/contact.html.erb</p>
-</div>
+<% content_for :title, "Contact — AcquireTMT" %>
+
+<section class="bg-brand-900 text-white">
+  <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 lg:py-28">
+    <div class="grid gap-16 lg:grid-cols-2 lg:items-start">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">Contact</p>
+        <h1 class="mt-5 font-serif text-5xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl">
+          Speak with an
+          <span class="text-brand-300">M&A advisor.</span>
+        </h1>
+        <p class="mt-6 max-w-md text-xl text-white/80">
+          Tell us about your business and what you're exploring. Conversations are confidential and there's no obligation.
+        </p>
+
+        <div class="mt-12 space-y-6">
+          <% [
+            ["mail", "Email", "advisors@acquiretmt.com"],
+            ["phone", "Phone", "+1 (000) 000-0000"],
+            ["map-pin", "Office", "Remote-first · United States"]
+          ].each do |icon, label, value| %>
+            <div class="flex items-center gap-4">
+              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-white/10 text-brand-300">
+                <%= lucide_icon icon, class: "h-5 w-5" %>
+              </span>
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.15em] text-white/50"><%= label %></p>
+                <p class="mt-1 text-base text-white"><%= value %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="rounded-sm bg-white p-8 shadow-soft sm:p-10">
+        <%= form_with model: Lead.new, url: leads_path, method: :post do |f| %>
+          <%= f.hidden_field :source, value: "contact" %>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label class="text-sm font-bold text-brand-900">First name *</label>
+              <%= f.text_field :first_name, required: true,
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+            <div>
+              <label class="text-sm font-bold text-brand-900">Last name</label>
+              <%= f.text_field :last_name,
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-5 sm:grid-cols-2">
+            <div>
+              <label class="text-sm font-bold text-brand-900">Email *</label>
+              <%= f.email_field :email, required: true,
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+            <div>
+              <label class="text-sm font-bold text-brand-900">Phone</label>
+              <%= f.telephone_field :phone,
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-5 sm:grid-cols-2">
+            <div>
+              <label class="text-sm font-bold text-brand-900">Company name *</label>
+              <%= f.text_field :company_name, required: true,
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+            <div>
+              <label class="text-sm font-bold text-brand-900">Company website</label>
+              <%= f.url_field :company_website,
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-5 sm:grid-cols-2">
+            <div>
+              <label class="text-sm font-bold text-brand-900">Annual revenue</label>
+              <%= f.select :revenue_range,
+                ["Under $1M", "$1M–$5M", "$5M–$10M", "$10M–$25M", "$25M–$50M", "$50M+"],
+                { include_blank: "Select range" },
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+            <div>
+              <label class="text-sm font-bold text-brand-900">EBITDA / profit</label>
+              <%= f.select :ebitda_range,
+                ["Under $250K", "$250K–$1M", "$1M–$3M", "$3M–$5M", "$5M–$10M", "$10M+"],
+                { include_blank: "Select range" },
+                class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <label class="text-sm font-bold text-brand-900">How can we help?</label>
+            <%= f.text_area :message, rows: 4,
+              class: "mt-2 w-full rounded-sm border border-slate-300 px-4 py-3 text-black outline-none focus:border-brand-500" %>
+          </div>
+
+          <%= f.submit "Request a confidential conversation",
+            class: "mt-6 w-full cursor-pointer rounded-sm bg-brand-900 px-6 py-4 text-base font-bold text-white hover:bg-black" %>
+
+          <p class="mt-4 text-center text-xs text-slate-500">
+            By submitting, you agree to be contacted about your enquiry. 100% confidential.
+          </p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

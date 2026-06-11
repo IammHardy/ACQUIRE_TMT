@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_09_070548) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_10_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,4 +30,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_09_070548) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "tool_runs", force: :cascade do |t|
+    t.string "tool_type", null: false
+    t.string "website"
+    t.string "company_name"
+    t.jsonb "inputs", default: {}, null: false
+    t.jsonb "analysis", default: {}, null: false
+    t.jsonb "result", default: {}, null: false
+    t.string "status", default: "pending", null: false
+    t.text "error"
+    t.bigint "lead_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lead_id"], name: "index_tool_runs_on_lead_id"
+    t.index ["status"], name: "index_tool_runs_on_status"
+    t.index ["tool_type"], name: "index_tool_runs_on_tool_type"
+  end
+
+  add_foreign_key "tool_runs", "leads"
 end

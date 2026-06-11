@@ -3,6 +3,13 @@
     <%= link_to "← Back to leads", admin_leads_path,
       class: "text-sm font-bold text-brand-700" %>
 
+    <% if notice.present? %>
+      <p class="mt-4 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"><%= notice %></p>
+    <% end %>
+    <% if alert.present? %>
+      <p class="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"><%= alert %></p>
+    <% end %>
+
     <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -62,7 +69,13 @@
 
         <div>
           <p class="text-sm font-bold text-slate-500">Status</p>
-          <p class="mt-1 text-brand-900"><%= @lead.status&.humanize %></p>
+          <%= form_with model: [:admin, @lead], method: :patch, class: "mt-1 flex items-center gap-2" do |f| %>
+            <%= f.select :status,
+              Lead.statuses.keys.map { |s| [s.humanize, s] },
+              {},
+              class: "rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-brand-900" %>
+            <%= f.submit "Update", class: "rounded-lg bg-brand-900 px-3 py-1.5 text-sm font-bold text-white hover:bg-black" %>
+          <% end %>
         </div>
 
         <div>

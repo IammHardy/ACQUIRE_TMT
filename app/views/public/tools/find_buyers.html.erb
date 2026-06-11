@@ -64,7 +64,8 @@
               <%= f.select :revenue_range,
                 ["Select a value", "Under $1M", "$1M - $5M", "$5M - $25M", "$25M - $100M", "$100M+"],
                 {},
-                class: "w-full rounded-sm border border-brand-100 bg-white px-4 py-4 text-base text-slate-700" %>
+                class: "w-full rounded-sm border border-brand-100 bg-white px-4 py-4 text-base text-slate-700",
+                data: { "buyer-map-target": "revenueRange" } %>
             </div>
 
             <div class="mt-7">
@@ -72,7 +73,8 @@
               <%= f.select :profit_range,
                 ["Select a value", "Not profitable yet", "Under $250k", "$250k - $1M", "$1M - $5M", "$5M+"],
                 {},
-                class: "w-full rounded-sm border border-brand-100 bg-white px-4 py-4 text-base text-slate-700" %>
+                class: "w-full rounded-sm border border-brand-100 bg-white px-4 py-4 text-base text-slate-700",
+                data: { "buyer-map-target": "profitRange" } %>
             </div>
           </div>
 
@@ -165,8 +167,11 @@
       Get Connected
     </button>
 
+    <!-- Buyer Category Breakdown -->
+    <div class="mt-10 grid gap-4 sm:grid-cols-3" data-buyer-map-target="categories"></div>
+
     <!-- Visible Buyer Cards -->
-    <div class="mt-12 space-y-8">
+    <div class="mt-12 space-y-8" data-buyer-map-target="buyerCards">
       <% [
         [
           "vcita",

@@ -23,7 +23,19 @@ export default class extends Controller {
     "stepTwoIndicator",
     "stepThreeIndicator",
     "ctaWebsiteInput",
-    "attemptCounter"
+    "attemptCounter",
+    "valueRange",
+    "valuationBasis",
+    "industryTag",
+    "industryLabel",
+    "analysisSummary",
+    "signalsList",
+    "rowBlendedRange",
+    "rowBlendedNote",
+    "rowEarningsBase",
+    "rowEarningsMult",
+    "rowRevenueBase",
+    "rowRevenueMult"
   ]
 
   connect() {
@@ -90,11 +102,13 @@ this.recordAttempt()
     
   }
 
-  startReport(event) {
+  async startReport(event) {
     event.preventDefault()
 
+    const website = this.websiteInputTarget.value.trim()
     const revenue = Number(this.revenueInputTarget.value)
     const profit = Number(this.profitInputTarget.value)
+    const salary = this.hasSalaryInputTarget ? Number(this.salaryInputTarget.value) : 0
 
     if (!revenue || !profit) {
       alert("Please enter your revenue and pre-tax profit.")
@@ -109,6 +123,11 @@ this.recordAttempt()
     this.financialStepTarget.classList.add("hidden")
     this.loadingStepTarget.classList.remove("hidden")
 
+    // Kick off the real AI analysis immediately, alongside the loading animation.
+    this.requestSettled = false
+    this.valuationData = null
+    const requestPromise = this.requestValuation({ website, revenue, profit, salary })
+
     let progress = 0
     let messageIndex = -1
 
@@ -117,8 +136,10 @@ this.recordAttempt()
     this.progressTextTarget.textContent = "0%"
 
     const interval = setInterval(() => {
+      // Hold near the end until the real response is in, then complete.
+      const cap = this.requestSettled ? 100 : 92
       progress += Math.floor(Math.random() * 8) + 5
-      if (progress >= 100) progress = 100
+      if (progress >= cap) progress = cap
 
       this.progressBarTarget.style.width = `${progress}%`
       this.progressTextTarget.textContent = `${progress}%`
@@ -142,12 +163,105 @@ this.recordAttempt()
         clearInterval(interval)
 
         setTimeout(() => {
+          if (this.valuationData) this.populateReport(this.valuationData)
           this.loadingStepTarget.classList.add("hidden")
           this.reportStepTarget.classList.remove("hidden")
           this.showDealComps()
-        }, 900)
+        }, 700)
       }
     }, 500)
+
+    try {
+      this.valuationData = await requestPromise
+      this.requestSettled = true
+    } catch (error) {
+      this.requestSettled = true
+      clearInterval(interval)
+      this.loadingStepTarget.classList.add("hidden")
+      this.financialStepTarget.classList.remove("hidden")
+      alert(error.message || "Something went wrong generating your valuation.")
+    }
+  }
+
+  async requestValuation({ website, revenue, profit, salary }) {
+    const token = document.querySelector('meta[name="csrf-token"]')?.content
+
+    const response = await fetch("/tools/valuation/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "X-CSRF-Token": token || ""
+      },
+      body: JSON.stringify({ website, revenue, profit, salary })
+    })
+
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok) {
+      throw new Error(data.error || "We couldn't generate your valuation. Please try again.")
+    }
+    return data
+  }
+
+  populateReport(data) {
+    const a = data.analysis || {}
+    const v = data.valuation || {}
+    const range = `${this.formatCurrency(v.low)} – ${this.formatCurrency(v.high)}`
+
+    this.setText("valueRange", range)
+    this.setText("valuationBasis", v.method ? `${v.method}.` : "")
+    this.setText("industryTag", v.industry_name || a.industry_name || "TMT")
+    this.setText("industryLabel", `${v.industry_name || a.industry_name || "Your"} businesses`)
+    this.setText("analysisSummary", a.summary || "Recently closed deals in your sector.")
+
+    this.setText("rowBlendedRange", range)
+    this.setText("rowBlendedNote", v.method || "Earnings + revenue")
+    this.setText("rowEarningsBase", `${this.formatCurrency(v.earnings)} earnings`)
+    this.setText("rowEarningsMult", v.implied_earnings_multiple ? `${v.implied_earnings_multiple}x` : "—")
+    this.setText("rowRevenueBase", `${this.formatCurrency(v.revenue)} revenue`)
+    this.setText("rowRevenueMult", v.implied_revenue_multiple ? `${v.implied_revenue_multiple}x` : "—")
+
+    this.companyNameTargets.forEach((t) => {
+      if (a.company_name) t.textContent = a.company_name
+    })
+
+    this.renderSignals(a.signals || [])
+  }
+
+  renderSignals(signals) {
+    if (!this.hasSignalsListTarget || !signals.length) return
+
+    this.signalsListTarget.innerHTML = ""
+    signals.forEach((signal) => {
+      const item = document.createElement("div")
+      item.className = "flex gap-4"
+      item.innerHTML = `
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-white text-brand-900 font-bold">✓</div>
+        <div><p class="text-sm leading-6 text-slate-700">${this.escapeHtml(signal)}</p></div>
+      `
+      this.signalsListTarget.appendChild(item)
+    })
+  }
+
+  setText(name, value) {
+    const cap = name.charAt(0).toUpperCase() + name.slice(1)
+    if (this[`has${cap}Target`]) this[`${name}Target`].textContent = value
+  }
+
+  formatCurrency(value) {
+    const n = Number(value) || 0
+    if (n >= 1_000_000) {
+      const m = n / 1_000_000
+      return `$${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M`
+    }
+    if (n >= 1_000) return `$${Math.round(n / 1_000)}K`
+    return `$${n}`
+  }
+
+  escapeHtml(value) {
+    const div = document.createElement("div")
+    div.textContent = String(value)
+    return div.innerHTML
   }
 
   addProcessingStep(title, description) {

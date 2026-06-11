@@ -1,5 +1,6 @@
-<section class="min-h-screen bg-brand-50 py-24 sm:py-28">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-controller="market-comps">
+<div data-controller="market-comps">
+<section class="min-h-screen bg-brand-50 py-24 sm:py-28" id="market-comps-tool">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
     <%= form_with model: Lead.new, url: leads_path do |f| %>
       <%= f.hidden_field :source, value: "market_comps" %>
@@ -227,29 +228,32 @@
 
         <!-- Snapshot Cards -->
         <div class="mt-6 rounded-sm border border-brand-100 bg-white p-6 shadow-soft">
-          <p class="text-sm text-slate-600">
+          <p class="text-sm text-slate-600" data-market-comps-target="sectorLabel">
             Computer Systems Design and Related Services sector M&A snapshot
           </p>
 
           <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <% [
-              ["Current Listings", "418"],
-              ["Combined Value", "$649.8M"],
-              ["Median Price/Revenue", "1.3×"],
-              ["Median Price/Cash Flow", "3.5×"]
-            ].each do |label, value| %>
-
-              <div class="rounded-sm border border-brand-100 bg-brand-50 p-5 text-center">
-                <p class="text-xs text-slate-500"><%= label %></p>
-                <p class="mt-2 font-serif text-3xl font-medium text-brand-900"><%= value %></p>
-              </div>
-
-            <% end %>
+            <div class="rounded-sm border border-brand-100 bg-brand-50 p-5 text-center">
+              <p class="text-xs text-slate-500">Current Listings</p>
+              <p class="mt-2 font-serif text-3xl font-medium text-brand-900" data-market-comps-target="listingsCount">418</p>
+            </div>
+            <div class="rounded-sm border border-brand-100 bg-brand-50 p-5 text-center">
+              <p class="text-xs text-slate-500">Combined Value</p>
+              <p class="mt-2 font-serif text-3xl font-medium text-brand-900" data-market-comps-target="combinedValue">$649.8M</p>
+            </div>
+            <div class="rounded-sm border border-brand-100 bg-brand-50 p-5 text-center">
+              <p class="text-xs text-slate-500">Median Price/Revenue</p>
+              <p class="mt-2 font-serif text-3xl font-medium text-brand-900" data-market-comps-target="medianPriceRevenue">1.3×</p>
+            </div>
+            <div class="rounded-sm border border-brand-100 bg-brand-50 p-5 text-center">
+              <p class="text-xs text-slate-500">Median Price/Cash Flow</p>
+              <p class="mt-2 font-serif text-3xl font-medium text-brand-900" data-market-comps-target="medianPriceCashFlow">3.5×</p>
+            </div>
           </div>
 
           <div class="mt-5 rounded-sm border border-brand-100 bg-brand-50 p-4 text-sm leading-6 text-slate-600">
             <strong class="text-brand-900">What this means for you:</strong>
-            There are active buyers and listings in your sector, with pricing signals based on revenue and cash flow multiples.
+            <span data-market-comps-target="takeaway">There are active buyers and listings in your sector, with pricing signals based on revenue and cash flow multiples.</span>
           </div>
         </div>
 
@@ -269,7 +273,7 @@
                 </tr>
               </thead>
 
-              <tbody>
+              <tbody data-market-comps-target="specialtyRows">
                 <tr class="border-t border-brand-100">
                   <td class="p-4">Computer Systems Design and Related Services</td>
                   <td class="p-4">100%</td>
@@ -285,7 +289,7 @@
         <div class="mt-8 rounded-sm border border-brand-100 bg-white p-6 shadow-soft">
           <h3 class="text-xl font-bold text-brand-900">Relevant Listings in Your Space</h3>
 
-          <div class="mt-6 grid gap-5 lg:grid-cols-2">
+          <div class="mt-6 grid gap-5 lg:grid-cols-2" data-market-comps-target="listings">
             <% [
               ["Loyalty SaaS Platform", "$702K", "$642K", "$642K"],
               ["Shopify SaaS Apps", "$702K", "$642K", "$642K"]
@@ -357,3 +361,191 @@
     <% end %>
   </div>
 </section>
+<section class="bg-white py-24 sm:py-28" data-controller="carousel">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+    <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <h2 class="font-serif text-4xl font-medium text-brand-900 sm:text-5xl">
+          What you’ll get
+        </h2>
+
+        <div class="mt-5 flex gap-2">
+          <button
+            type="button"
+            data-action="carousel#scrollLeft"
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-brand-100 text-brand-900 transition hover:bg-brand-50">
+            <%= lucide_icon "chevron-left", class: "h-4 w-4" %>
+          </button>
+
+          <button
+            type="button"
+            data-action="carousel#scrollRight"
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-brand-100 text-brand-900 transition hover:bg-brand-50">
+            <%= lucide_icon "chevron-right", class: "h-4 w-4" %>
+          </button>
+        </div>
+      </div>
+
+      <div class="max-w-md">
+        <p class="text-sm leading-6 text-slate-600">
+          A detailed and personalized market comps report.
+
+Produced in less than 60 seconds.
+        </p>
+
+        <a href="#"
+          class="mt-5 inline-flex rounded-sm bg-brand-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-500">
+          Generate a market comps report
+        </a>
+      </div>
+    </div>
+
+    <!-- Carousel -->
+    <div class="mt-14">
+
+      <div
+  data-carousel-target="track"
+  class="flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4 active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+
+        <% [
+          [
+            "AI-powered valuation based on market data",
+            "Get an instant valuation based on recent M&A transactions and market signals.",
+            "valuation-card-1.png",
+            "chart-column"
+          ],
+          [
+            "Data-backed snapshot of your market position",
+            "Quickly see how your business compares to competitors.",
+            "valuation-card-2.png",
+            "chart-scatter"
+          ],
+          [
+            "Personalized valuation insights for your business",
+            "Understand what specific factors may increase or reduce your valuation.",
+            "valuation-card-3.png",
+            "trending-up"
+          ],
+          [
+            "Market sector valuation benchmarks",
+            "Review what owners in your category are asking and selling for.",
+            "valuation-card-4.png",
+            "chart-bar"
+          ],
+          [
+            "Comparable M&A transaction signals",
+            "Preview relevant transaction patterns and pricing benchmarks.",
+            "valuation-card-5.png",
+            "briefcase-business"
+          ]
+        ].each do |title, description, image, icon| %>
+
+          <div data-carousel-card class="min-w-[88%] sm:min-w-[48%] lg:min-w-[31%] snap-start overflow-hidden rounded-sm border border-brand-100 bg-brand-50 transition duration-300 hover:-translate-y-1 hover:shadow-soft">
+
+            <!-- Top -->
+            <div class="p-7">
+              <%= lucide_icon icon,
+                class: "h-6 w-6 text-brand-900" %>
+
+              <h3 class="mt-5 font-serif text-3xl font-medium leading-tight text-brand-900">
+                <%= title %>
+              </h3>
+            </div>
+
+            <!-- Image -->
+            <div class="px-7">
+              <%= image_tag image,
+                class: "h-72 w-full rounded-sm object-contain",
+                alt: title %>
+            </div>
+
+            <!-- Bottom -->
+            <div class="p-7">
+              <p class="text-sm leading-6 text-slate-600">
+                <%= description %>
+              </p>
+            </div>
+
+          </div>
+
+        <% end %>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+<section class="bg-white py-20">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div class="rounded-sm bg-brand-900 p-8 text-white shadow-soft sm:p-10">
+      <h2 class="font-serif text-3xl font-medium text-white">
+        Generate a market comps report
+      </h2>
+
+      <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+        <input
+  type="url"
+  placeholder="Company website URL"
+  data-market-comps-target="ctaWebsiteInput"
+  class="flex-1 rounded-sm border border-white/10 bg-white px-5 py-4 text-sm text-brand-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300">
+        <button
+  type="button"
+  data-action="click->market-comps#startFromCta"
+  class="inline-flex items-center justify-center rounded-sm bg-brand-300 px-8 py-4 text-sm font-bold text-brand-900 transition hover:bg-white">
+  Generate Comps
+</button>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="bg-brand-50 py-24 sm:py-28">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <h2 class="font-serif text-4xl font-medium text-brand-900 sm:text-5xl">
+      Valuation FAQ
+    </h2>
+
+    <div class="mt-12 divide-y divide-brand-100 border-y border-brand-100">
+  <% [
+  [
+    "What should I do once I have my comps?",
+    "Use your comps to stress-test your expected valuation, prepare for buyer questions, and identify value-boosting improvements before going to market. If you want deeper insight into how buyers may view your business, you can book a free 15-minute call with an AcquireTMT advisor."
+  ],
+  [
+    "What are comps and why do they matter?",
+    "Comps are comparable transactions, listings, or market benchmarks from businesses similar to yours in size, sector, and profile. They help show what the market may be paying for companies like yours and give you a stronger pricing anchor when evaluating buyer interest."
+  ],
+  [
+    "Where does the data come from?",
+    "AcquireTMT uses market intelligence, comparable M&A activity, buyer demand signals, and transaction benchmarks across technology, media, telecom, digital infrastructure, SaaS, MSP, and tech-enabled services businesses."
+  ],
+  [
+    "Why show both price-to-revenue and price-to-cash-flow multiples?",
+    "Buyers evaluate businesses through different lenses. Some TMT businesses are valued mainly on cash flow, while high-growth or recurring-revenue companies may also be assessed using revenue multiples. Showing both gives you a clearer view of the potential pricing corridor."
+  ],
+  [
+    "How accurate are these comparable listings?",
+    "Each comp should be treated as a directional benchmark, not a final valuation. Final value can change based on diligence, buyer demand, recurring revenue quality, margins, customer concentration, deal terms, and timing."
+  ]
+].each do |question, answer| %>
+  <details class="group py-6">
+    <summary class="flex cursor-pointer list-none items-center justify-between gap-6">
+      <h3 class="font-serif text-2xl font-medium text-brand-900">
+        <%= question %>
+      </h3>
+
+      <span class="shrink-0 transition group-open:rotate-45">
+        <%= lucide_icon "plus", class: "h-5 w-5 text-brand-900" %>
+      </span>
+    </summary>
+
+    <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">
+      <%= answer %>
+    </p>
+  </details>
+
+  <% end %>
+</div>
+  </div>
+</section>
+</div>
