@@ -31,6 +31,10 @@ class OnboardingController < ApplicationController
     %i[ev_min ev_max ebitda_min ebitda_max].each do |key|
       permitted[key] = permitted[key].present? ? (permitted[key].to_f * 1_000_000).round : nil
     end
+    # Personal-email buyers can only be Individuals (enforced server-side too).
+    unless @user.available_buyer_types.include?(permitted[:buyer_type])
+      permitted[:buyer_type] = "Individual"
+    end
     permitted
   end
 end

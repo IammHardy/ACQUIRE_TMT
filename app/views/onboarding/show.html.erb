@@ -20,14 +20,19 @@
       <div data-wizard-target="step" class="rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
         <h1 class="font-serif text-3xl font-medium text-brand-900">Buyer type</h1>
         <p class="mt-1 text-sm text-slate-600">Tell us how you're acquiring.</p>
+        <% available = @user.available_buyer_types %>
         <div class="mt-6 grid gap-3 sm:grid-cols-2">
           <% User::BUYER_TYPES.each do |type| %>
-            <label class="<%= tile %>">
-              <%= f.radio_button :buyer_type, type, checked: (@user.buyer_type == type || (@user.buyer_type.blank? && type == "Individual")), class: "sr-only" %>
+            <% enabled = available.include?(type) %>
+            <label class="<%= tile %> <%= "cursor-not-allowed opacity-40" unless enabled %>">
+              <%= f.radio_button :buyer_type, type, checked: (@user.buyer_type == type || (@user.buyer_type.blank? && type == "Individual")), disabled: !enabled, class: "sr-only" %>
               <%= type %>
             </label>
           <% end %>
         </div>
+        <% if @user.personal_email? %>
+          <p class="mt-2 text-xs text-slate-500">Search Fund, PE Firm and Strategic Acquirer require a work email address.</p>
+        <% end %>
         <div class="mt-6 grid gap-4 sm:grid-cols-2">
           <div>
             <%= f.label :phone, "Phone", class: "block text-sm font-semibold text-brand-900" %>

@@ -13,6 +13,14 @@ class User < ApplicationRecord
 
   # Buyer onboarding option sets (mirrors OffDeal's wizard).
   BUYER_TYPES = ["Individual", "Search Fund", "PE Firm", "Strategic Acquirer"].freeze
+
+  # Personal email providers — these may only register as "Individual"; the
+  # institutional buyer types require a work email (OffDeal behavior).
+  PERSONAL_EMAIL_DOMAINS = %w[
+    gmail.com googlemail.com yahoo.com yahoo.co.uk ymail.com outlook.com hotmail.com
+    live.com msn.com icloud.com me.com mac.com aol.com proton.me protonmail.com pm.me
+    gmx.com gmx.net mail.com zoho.com yandex.com
+  ].freeze
   EXPERIENCE_LEVELS = [
     "First-time buyer",
     "I've bought or sold a business before",
@@ -65,6 +73,19 @@ class User < ApplicationRecord
   # A buyer has set their acquisition criteria once they've picked a sector.
   def mandate_set?
     mandate_industries.present?
+  end
+
+  def email_domain
+    email_address.to_s.split("@").last.to_s.downcase
+  end
+
+  def personal_email?
+    PERSONAL_EMAIL_DOMAINS.include?(email_domain)
+  end
+
+  # Personal-email buyers can only be Individuals; work emails unlock all types.
+  def available_buyer_types
+    personal_email? ? ["Individual"] : BUYER_TYPES
   end
 
   def onboarded?
