@@ -1,0 +1,55 @@
+<section class="bg-slate-50 py-10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-extrabold text-brand-900">Data room access requests</h1>
+        <p class="mt-2 text-slate-600">Approve buyers to unlock deal materials.</p>
+      </div>
+      <%= link_to "← Deals", admin_deals_path, class: "text-sm font-bold text-brand-700 hover:underline" %>
+    </div>
+
+    <% if notice.present? %>
+      <p class="mt-4 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"><%= notice %></p>
+    <% end %>
+
+    <div class="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+          <thead class="bg-slate-50">
+            <tr>
+              <% ["Buyer", "Deal", "Requested", "Status", ""].each do |h| %>
+                <th class="px-6 py-4 text-left text-xs font-bold uppercase text-slate-500"><%= h %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <% @accesses.each do |access| %>
+              <tr>
+                <td class="px-6 py-4 text-sm">
+                  <p class="font-semibold text-brand-900"><%= access.user.display_name %></p>
+                  <p class="text-slate-500"><%= access.user.email_address %></p>
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-600"><%= access.deal.reference %> — <%= access.deal.title %></td>
+                <td class="px-6 py-4 text-sm text-slate-500"><%= access.created_at.strftime("%d %b %Y") %></td>
+                <td class="px-6 py-4 text-sm font-semibold text-brand-900"><%= access.status.capitalize %></td>
+                <td class="px-6 py-4 text-right text-sm">
+                  <% unless access.status == "approved" %>
+                    <%= button_to "Approve", approve_admin_deal_access_path(access), method: :patch,
+                      form: { class: "inline" }, class: "cursor-pointer font-bold text-emerald-600 hover:underline" %>
+                  <% end %>
+                  <% unless access.status == "declined" %>
+                    <%= button_to "Decline", decline_admin_deal_access_path(access), method: :patch,
+                      form: { class: "inline" }, class: "ml-3 cursor-pointer text-red-600 hover:underline" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+            <% if @accesses.empty? %>
+              <tr><td colspan="5" class="px-6 py-8 text-center text-sm text-slate-400">No access requests yet.</td></tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

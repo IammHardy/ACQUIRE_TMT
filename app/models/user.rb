@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :tool_runs, dependent: :nullify
   has_many :leads, dependent: :nullify
+  has_many :deal_accesses, dependent: :destroy
 
   # A signup picks a role: sellers track their tool runs; buyers get a curated
   # deal feed matching their acquisition mandate.

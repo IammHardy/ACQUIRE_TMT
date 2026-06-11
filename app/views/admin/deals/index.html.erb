@@ -5,7 +5,10 @@
         <h1 class="text-3xl font-extrabold text-brand-900">Deals</h1>
         <p class="mt-2 text-slate-600">Listings shown to buyers in their curated feed.</p>
       </div>
-      <%= link_to "New deal", new_admin_deal_path, class: "rounded-lg bg-brand-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-black" %>
+      <div class="flex items-center gap-4">
+        <%= link_to "Access requests", admin_deal_accesses_path, class: "text-sm font-bold text-brand-700 hover:underline" %>
+        <%= link_to "New deal", new_admin_deal_path, class: "rounded-lg bg-brand-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-black" %>
+      </div>
     </div>
 
     <% if notice.present? %>

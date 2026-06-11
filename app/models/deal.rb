@@ -3,6 +3,8 @@
 class Deal < ApplicationRecord
   STATUSES = %w[active under_offer sold].freeze
 
+  has_many :deal_accesses, dependent: :destroy
+
   validates :reference, :title, :industry, presence: true
   validates :reference, uniqueness: true
   validates :status, inclusion: { in: STATUSES }

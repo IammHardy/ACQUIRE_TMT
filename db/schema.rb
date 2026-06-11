@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_11_160000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_11_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_160000) do
     t.datetime "updated_at", null: false
     t.index ["industry", "name"], name: "index_comps_on_industry_and_name", unique: true
     t.index ["industry"], name: "index_comps_on_industry"
+  end
+
+  create_table "deal_accesses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "deal_id", null: false
+    t.string "status", default: "requested", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_id"], name: "index_deal_accesses_on_deal_id"
+    t.index ["user_id", "deal_id"], name: "index_deal_accesses_on_user_id_and_deal_id", unique: true
+    t.index ["user_id"], name: "index_deal_accesses_on_user_id"
   end
 
   create_table "deals", force: :cascade do |t|
@@ -132,6 +143,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_160000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "deal_accesses", "deals"
+  add_foreign_key "deal_accesses", "users"
   add_foreign_key "leads", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "tool_runs", "leads"

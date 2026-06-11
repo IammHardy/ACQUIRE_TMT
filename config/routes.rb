@@ -42,5 +42,11 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :leads, only: [:index, :show, :update]
     resources :deals
+    resources :deal_accesses, only: [:index] do
+      member do
+        patch :approve
+        patch :decline
+      end
+    end
   end
 end

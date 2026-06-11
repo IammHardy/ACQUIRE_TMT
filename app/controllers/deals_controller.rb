@@ -3,18 +3,13 @@ class DealsController < ApplicationController
   before_action :set_deal
 
   def show
+    @access = Current.user.deal_accesses.find_by(deal: @deal)
   end
 
-  # A buyer asks to see the full deal. Captured as a lead for the advisor team.
+  # A buyer requests the data room; admins approve before it unlocks.
   def request_access
-    Lead.create(
-      first_name: Current.user.display_name,
-      email: Current.user.email_address,
-      company_name: "Buyer — #{Current.user.display_name}",
-      source: "deal_inquiry",
-      message: "Access requested for #{@deal.reference} — #{@deal.title}"
-    )
-    redirect_to deal_path(@deal), notice: "Access requested — our team will follow up by email."
+    Current.user.deal_accesses.find_or_create_by(deal: @deal) { |a| a.status = "requested" }
+    redirect_to deal_path(@deal), notice: "Access requested — our team will review and unlock the data room."
   end
 
   private

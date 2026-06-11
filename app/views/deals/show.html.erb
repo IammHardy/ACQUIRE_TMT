@@ -40,14 +40,46 @@
         </div>
       <% end %>
 
-      <div class="mt-8 rounded-sm bg-brand-900 p-7 text-white">
-        <h3 class="font-serif text-2xl font-medium">Want the full picture?</h3>
-        <p class="mt-2 text-sm leading-6 text-white/70">
-          Request access to the data room — full financials, the banker-authored CIM, and a call with the deal team.
-        </p>
-        <%= button_to "Request access", request_access_deal_path(@deal), method: :post,
-          class: "mt-5 cursor-pointer rounded-sm bg-brand-300 px-6 py-3 text-sm font-bold text-brand-900 transition hover:bg-white" %>
-      </div>
+      <% if @access&.approved? %>
+        <!-- Unlocked data room -->
+        <div class="mt-8 rounded-sm border border-brand-100 bg-white p-7">
+          <div class="flex items-center gap-2">
+            <%= lucide_icon "lock-open", class: "h-5 w-5 text-brand-500" %>
+            <h3 class="font-serif text-2xl font-medium text-brand-900">Data room</h3>
+          </div>
+          <p class="mt-1 text-sm text-slate-600">Access granted. Your deal materials:</p>
+          <div class="mt-5 divide-y divide-brand-100 border-y border-brand-100">
+            <% ["Historical financials & tax returns", "Confidential Information Memorandum (CIM)", "Customer & revenue breakdown", "Secure data room"].each do |doc| %>
+              <div class="flex items-center justify-between py-3">
+                <span class="flex items-center gap-3 text-sm text-slate-700">
+                  <%= lucide_icon "file-text", class: "h-4 w-4 text-brand-500" %><%= doc %>
+                </span>
+                <span class="text-sm font-semibold text-brand-500">Available</span>
+              </div>
+            <% end %>
+          </div>
+          <p class="mt-4 text-xs text-slate-400">Materials are shared by the deal team — they'll reach out to coordinate the data room.</p>
+        </div>
+      <% elsif @access&.status == "requested" %>
+        <div class="mt-8 rounded-sm border border-brand-100 bg-brand-50 p-7 text-center">
+          <%= lucide_icon "clock", class: "mx-auto h-6 w-6 text-brand-500" %>
+          <p class="mt-3 font-semibold text-brand-900">Access requested</p>
+          <p class="mt-1 text-sm text-slate-600">Our team is reviewing your request and will unlock the data room shortly.</p>
+        </div>
+      <% elsif @access&.status == "declined" %>
+        <div class="mt-8 rounded-sm border border-brand-100 bg-brand-50 p-7 text-center text-sm text-slate-600">
+          Access to this deal isn't available for your profile right now.
+        </div>
+      <% else %>
+        <div class="mt-8 rounded-sm bg-brand-900 p-7 text-white">
+          <h3 class="font-serif text-2xl font-medium">Want the full picture?</h3>
+          <p class="mt-2 text-sm leading-6 text-white/70">
+            Request access to the data room — full financials, the banker-authored CIM, and a call with the deal team.
+          </p>
+          <%= button_to "Request access", request_access_deal_path(@deal), method: :post,
+            class: "mt-5 cursor-pointer rounded-sm bg-brand-300 px-6 py-3 text-sm font-bold text-brand-900 transition hover:bg-white" %>
+        </div>
+      <% end %>
     </div>
   </div>
 </section>
