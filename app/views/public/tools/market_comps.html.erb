@@ -234,7 +234,7 @@
 
           <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div class="rounded-sm border border-brand-100 bg-brand-50 p-5 text-center">
-              <p class="text-xs text-slate-500">Current Listings</p>
+              <p class="text-xs text-slate-500">Comparable Deals</p>
               <p class="mt-2 font-serif text-3xl font-medium text-brand-900" data-market-comps-target="listingsCount">418</p>
             </div>
             <div class="rounded-sm border border-brand-100 bg-brand-50 p-5 text-center">
@@ -320,6 +320,22 @@
 
             <% end %>
           </div>
+        </div>
+
+        <!-- Methodology & sources -->
+        <div class="mt-8 rounded-sm border border-brand-100 bg-brand-50 p-6 text-sm leading-6 text-slate-600">
+          <p class="font-semibold text-brand-900">Where these comps come from</p>
+          <p class="mt-2">
+            Median multiples are drawn from comparable transactions in our dataset, sourced from public
+            2025 broker &amp; marketplace data (as of <span data-market-comps-target="compsAsOf">2025</span>):
+          </p>
+          <ul class="mt-3 space-y-1.5" data-market-comps-target="compsSources">
+            <li class="text-slate-500">Sources load with your report.</li>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">
+            Each comp is a directional benchmark, not a formal valuation. Final value depends on diligence,
+            recurring-revenue quality, margins, customer concentration, deal terms, and timing.
+          </p>
         </div>
 
         <!-- CTA Form -->

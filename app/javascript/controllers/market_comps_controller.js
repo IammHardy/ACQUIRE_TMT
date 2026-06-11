@@ -27,7 +27,9 @@ export default class extends Controller {
     "medianPriceCashFlow",
     "takeaway",
     "specialtyRows",
-    "listings"
+    "listings",
+    "compsSources",
+    "compsAsOf"
   ]
 
   connect() {
@@ -204,8 +206,30 @@ export default class extends Controller {
       if (a.company_name) t.textContent = a.company_name
     })
 
+    if (c.as_of) this.setText("compsAsOf", c.as_of)
     this.renderSpecialtyRows(c.specialty_rows || [])
     this.renderListings(c.listings || [], a)
+    this.renderSources(c.sources || [])
+  }
+
+  renderSources(sources) {
+    if (!this.hasCompsSourcesTarget) return
+
+    this.compsSourcesTarget.innerHTML = ""
+    if (!sources.length) {
+      this.compsSourcesTarget.innerHTML = `<li class="text-slate-500">Comparable transaction data is being compiled for your sector.</li>`
+      return
+    }
+    sources.forEach((src) => {
+      const li = document.createElement("li")
+      li.className = "flex gap-2"
+      const name = this.escapeHtml(src.name || "Market data")
+      const link = src.url
+        ? `<a href="${src.url}" target="_blank" rel="noopener" class="font-semibold text-brand-500 hover:underline">${name}</a>`
+        : `<span class="font-semibold text-brand-900">${name}</span>`
+      li.innerHTML = `<span class="text-brand-300">•</span><span>${link}</span>`
+      this.compsSourcesTarget.appendChild(li)
+    })
   }
 
   renderSpecialtyRows(rows) {
