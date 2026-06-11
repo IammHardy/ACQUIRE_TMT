@@ -6,6 +6,7 @@ export default class extends Controller {
     "financialStep",
     "loadingStep",
     "reportStep",
+    "error",
     "websiteInput",
     "ctaWebsiteInput",
     "companyName",
@@ -45,11 +46,12 @@ export default class extends Controller {
 
   showFinancials(event) {
     event.preventDefault()
+    this.clearError()
 
     const website = this.websiteInputTarget.value.trim()
 
     if (!website) {
-      alert("Please enter your company website.")
+      this.showError("Please enter your company website.")
       return
     }
 
@@ -67,7 +69,7 @@ export default class extends Controller {
     const website = this.ctaWebsiteInputTarget.value.trim()
 
     if (!website) {
-      alert("Please enter your company website.")
+      this.showError("Please enter your company website.")
       return
     }
 
@@ -89,18 +91,19 @@ export default class extends Controller {
 
   async startReport(event) {
     event.preventDefault()
+    this.clearError()
 
     const website = this.websiteInputTarget.value.trim()
     const revenue = Number(this.revenueInputTarget.value)
     const profit = Number(this.profitInputTarget.value)
 
     if (!revenue || !profit) {
-      alert("Please enter your revenue and pre-tax profit.")
+      this.showError("Please enter your revenue and pre-tax profit.")
       return
     }
 
     if (profit > revenue) {
-      alert("Pre-tax profit cannot be greater than annual revenue.")
+      this.showError("Pre-tax profit cannot be greater than annual revenue.")
       return
     }
 
@@ -167,7 +170,7 @@ export default class extends Controller {
       clearInterval(interval)
       this.loadingStepTarget.classList.add("hidden")
       this.financialStepTarget.classList.remove("hidden")
-      alert(error.message || "Something went wrong generating your comps report.")
+      this.showError(error.message || "Something went wrong generating your comps report.")
     }
   }
 
@@ -281,6 +284,17 @@ export default class extends Controller {
   setText(name, value) {
     const cap = name.charAt(0).toUpperCase() + name.slice(1)
     if (this[`has${cap}Target`]) this[`${name}Target`].textContent = value
+  }
+
+  showError(message) {
+    if (!this.hasErrorTarget) { window.alert(message); return }
+    this.errorTarget.textContent = message
+    this.errorTarget.classList.remove("hidden")
+    this.errorTarget.scrollIntoView({ behavior: "smooth", block: "center" })
+  }
+
+  clearError() {
+    if (this.hasErrorTarget) this.errorTarget.classList.add("hidden")
   }
 
   formatCurrency(value) {

@@ -7,6 +7,7 @@ export default class extends Controller {
     "loadingStep",
     "resultsStep",
     "detailsStep",
+    "error",
     "websiteInput",
     "ctaWebsiteInput",
     "websitePreview",
@@ -78,13 +79,15 @@ export default class extends Controller {
   }
 
   openFinancialStep(website) {
+    this.clearError()
+
     if (!website) {
-      alert("Please enter your company website.")
+      this.showError("Please enter your company website.")
       return
     }
 
     if (!this.canRunSearch()) {
-      alert("You’ve reached the free BuyerMap preview limit. Please book a call to continue.")
+      this.showError("You’ve reached the free BuyerMap preview limit. Please book a call to continue.")
       return
     }
 
@@ -112,6 +115,7 @@ export default class extends Controller {
 
   async startLoading(event) {
     event.preventDefault()
+    this.clearError()
 
     const website = this.websiteInputTarget.value.trim()
     const revenueRange = this.hasRevenueRangeTarget ? this.revenueRangeTarget.value : ""
@@ -169,7 +173,7 @@ export default class extends Controller {
       clearInterval(interval)
       this.loadingStepTarget.classList.add("hidden")
       this.financialStepTarget.classList.remove("hidden")
-      alert(error.message || "Something went wrong building your BuyerMap.")
+      this.showError(error.message || "Something went wrong building your BuyerMap.")
     }
   }
 
@@ -274,6 +278,17 @@ export default class extends Controller {
       `
       this.buyerCardsTarget.appendChild(card)
     })
+  }
+
+  showError(message) {
+    if (!this.hasErrorTarget) { window.alert(message); return }
+    this.errorTarget.textContent = message
+    this.errorTarget.classList.remove("hidden")
+    this.errorTarget.scrollIntoView({ behavior: "smooth", block: "center" })
+  }
+
+  clearError() {
+    if (this.hasErrorTarget) this.errorTarget.classList.add("hidden")
   }
 
   escapeHtml(value) {

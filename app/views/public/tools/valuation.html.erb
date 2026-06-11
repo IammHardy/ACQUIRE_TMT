@@ -5,6 +5,9 @@
     <%= form_with model: Lead.new, url: leads_path do |f| %>
       <%= f.hidden_field :source, value: "valuation_snapshot" %>
 
+      <div data-valuation-target="error" role="alert"
+        class="mx-auto mb-6 hidden max-w-3xl rounded-sm border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700"></div>
+
       <!-- STEP 1: WEBSITE -->
       <div data-valuation-target="websiteStep" class="mx-auto max-w-5xl text-center">
         <div class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-900 shadow-soft">

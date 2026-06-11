@@ -6,6 +6,9 @@
     <%= form_with model: Lead.new, url: leads_path do |f| %>
       <%= f.hidden_field :source, value: "buyer_map" %>
 
+      <div data-buyer-map-target="error" role="alert"
+        class="mx-auto mb-6 hidden max-w-4xl rounded-sm border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700"></div>
+
       <!-- STEP 1: WEBSITE INPUT -->
       <div data-buyer-map-target="websiteStep" class="mx-auto max-w-4xl text-center">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">
