@@ -80,6 +80,7 @@ GEM
       standardwebhooks
     ast (2.4.3)
     base64 (0.3.0)
+    bcrypt (3.1.22)
     bcrypt_pbkdf (1.1.2)
     benchmark (0.5.0)
     bigdecimal (4.1.2)
@@ -383,6 +384,7 @@ PLATFORMS
 
 DEPENDENCIES
   anthropic (~> 1.48)
+  bcrypt (~> 3.1.7)
   bootsnap
   brakeman
   capybara

@@ -93,11 +93,20 @@
         <% end %>
       </nav>
 
-      <%= link_to tools_valuation_path,
-        class: "hidden items-center gap-1.5 rounded-sm bg-brand-300 px-5 py-2.5 text-sm font-bold text-brand-900 shadow-soft transition hover:bg-white lg:inline-flex" do %>
-        Get Started
-        <%= lucide_icon "arrow-right", class: "h-4 w-4" %>
-      <% end %>
+      <div class="hidden items-center gap-3 lg:flex">
+        <% if authenticated? %>
+          <%= link_to "Dashboard", dashboard_path, class: "text-sm font-semibold text-white/80 transition hover:text-white" %>
+          <%= button_to "Sign out", session_path, method: :delete, form: { class: "contents" },
+            class: "cursor-pointer rounded-sm bg-brand-300 px-5 py-2.5 text-sm font-bold text-brand-900 shadow-soft transition hover:bg-white" %>
+        <% else %>
+          <%= link_to "Sign in", sign_in_path, class: "text-sm font-semibold text-white/80 transition hover:text-white" %>
+          <%= link_to sign_up_path,
+            class: "inline-flex items-center gap-1.5 rounded-sm bg-brand-300 px-5 py-2.5 text-sm font-bold text-brand-900 shadow-soft transition hover:bg-white" do %>
+            Get Started
+            <%= lucide_icon "arrow-right", class: "h-4 w-4" %>
+          <% end %>
+        <% end %>
+      </div>
 
       <button type="button"
         class="rounded-sm border border-white/20 p-2 text-white transition hover:bg-white/10 lg:hidden"
@@ -127,10 +136,14 @@
           <% end %>
         <% end %>
 
-        <%= link_to tools_valuation_path,
-          class: "mt-3 flex items-center justify-center gap-2 rounded-sm bg-brand-300 px-5 py-3 font-bold text-brand-900 hover:bg-white" do %>
-          Get Started
-          <%= lucide_icon "arrow-right", class: "h-4 w-4" %>
+        <% if authenticated? %>
+          <%= link_to "Dashboard", dashboard_path, class: "mt-3 rounded-sm px-3 py-3 hover:bg-white/10 hover:text-brand-300" %>
+          <%= button_to "Sign out", session_path, method: :delete, form: { class: "contents" },
+            class: "mt-1 w-full cursor-pointer rounded-sm bg-brand-300 px-5 py-3 text-left font-bold text-brand-900 hover:bg-white" %>
+        <% else %>
+          <%= link_to "Sign in", sign_in_path, class: "mt-3 rounded-sm px-3 py-3 hover:bg-white/10 hover:text-brand-300" %>
+          <%= link_to "Get Started", sign_up_path,
+            class: "mt-1 flex items-center justify-center gap-2 rounded-sm bg-brand-300 px-5 py-3 font-bold text-brand-900 hover:bg-white" %>
         <% end %>
       </nav>
     </div>
