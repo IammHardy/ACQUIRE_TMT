@@ -7,8 +7,11 @@
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">Seller dashboard</p>
         <h1 class="mt-2 font-serif text-4xl font-medium text-brand-900">Welcome, <%= @user.display_name %></h1>
       </div>
-      <%= button_to "Sign out", session_path, method: :delete,
-        class: "w-fit rounded-sm border border-brand-100 bg-white px-4 py-2 text-sm font-bold text-brand-900 hover:bg-brand-50" %>
+      <div class="flex items-center gap-3">
+        <%= link_to "Settings", settings_path, class: "text-sm font-semibold text-brand-700 hover:underline" %>
+        <%= button_to "Sign out", session_path, method: :delete,
+          class: "w-fit rounded-sm border border-brand-100 bg-white px-4 py-2 text-sm font-bold text-brand-900 hover:bg-brand-50" %>
+      </div>
     </div>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-3">

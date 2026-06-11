@@ -1,0 +1,59 @@
+<% content_for :title, "Account settings" %>
+<% input = "mt-1 w-full rounded-sm border border-brand-100 px-4 py-2.5 text-sm text-brand-900 focus:border-brand-300 focus:outline-none focus:ring-1 focus:ring-brand-300" %>
+
+<section class="min-h-screen bg-brand-50 py-12">
+  <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+    <%= link_to "← Back to dashboard", dashboard_path, class: "text-sm font-bold text-brand-700" %>
+    <h1 class="mt-4 font-serif text-4xl font-medium text-brand-900">Account settings</h1>
+
+    <% if notice.present? %>
+      <p class="mt-6 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"><%= notice %></p>
+    <% end %>
+    <% if alert.present? %>
+      <p class="mt-6 rounded-sm border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"><%= alert %></p>
+    <% end %>
+
+    <!-- Profile -->
+    <div class="mt-6 rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
+      <h2 class="font-serif text-2xl font-medium text-brand-900">Profile</h2>
+      <%= form_with model: @user, url: settings_path, method: :patch do |f| %>
+        <% if @user.errors.any? %>
+          <p class="mt-4 rounded-sm border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"><%= @user.errors.full_messages.to_sentence %></p>
+        <% end %>
+        <div class="mt-5 space-y-4">
+          <div>
+            <%= f.label :name, "Full name", class: "block text-sm font-semibold text-brand-900" %>
+            <%= f.text_field :name, class: input %>
+          </div>
+          <div>
+            <%= f.label :email_address, "Email", class: "block text-sm font-semibold text-brand-900" %>
+            <%= f.email_field :email_address, class: input %>
+          </div>
+        </div>
+        <%= f.submit "Save profile", class: "mt-6 cursor-pointer rounded-sm bg-brand-900 px-6 py-3 text-sm font-bold text-white transition hover:bg-brand-500" %>
+      <% end %>
+    </div>
+
+    <!-- Password -->
+    <div class="mt-6 rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
+      <h2 class="font-serif text-2xl font-medium text-brand-900">Change password</h2>
+      <%= form_with url: settings_password_path, method: :patch do |f| %>
+        <div class="mt-5 space-y-4">
+          <div>
+            <%= f.label "user_current_password", "Current password", class: "block text-sm font-semibold text-brand-900" %>
+            <%= f.password_field "user[current_password]", autocomplete: "current-password", class: input %>
+          </div>
+          <div>
+            <%= f.label "user_password", "New password", class: "block text-sm font-semibold text-brand-900" %>
+            <%= f.password_field "user[password]", autocomplete: "new-password", class: input %>
+          </div>
+          <div>
+            <%= f.label "user_password_confirmation", "Confirm new password", class: "block text-sm font-semibold text-brand-900" %>
+            <%= f.password_field "user[password_confirmation]", autocomplete: "new-password", class: input %>
+          </div>
+        </div>
+        <%= f.submit "Change password", class: "mt-6 cursor-pointer rounded-sm bg-brand-900 px-6 py-3 text-sm font-bold text-white transition hover:bg-brand-500" %>
+      <% end %>
+    </div>
+  </div>
+</section>

@@ -9,6 +9,10 @@ Rails.application.routes.draw do
   get   "dashboard", to: "dashboards#show", as: :dashboard
   patch "dashboard/mandate", to: "buyer_mandates#update", as: :buyer_mandate
 
+  get   "settings", to: "settings#show", as: :settings
+  patch "settings", to: "settings#update"
+  patch "settings/password", to: "settings#update_password", as: :settings_password
+
   resources :deals, only: %i[show] do
     post :request_access, on: :member
   end
