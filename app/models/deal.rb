@@ -11,13 +11,14 @@ class Deal < ApplicationRecord
 
   scope :active, -> { where(status: "active") }
 
-  # Active deals matching a buyer's mandate (industries + revenue range),
-  # newest first. An empty mandate matches everything.
+  # Active deals matching a buyer's mandate (industries + enterprise-value
+  # range, using asking price as the EV proxy), newest first. An empty mandate
+  # matches everything.
   def self.for_buyer(user)
     scope = active
     scope = scope.where(industry: user.mandate_industries) if user.mandate_industries.present?
-    scope = scope.where("revenue >= ?", user.mandate_min_revenue) if user.mandate_min_revenue.present?
-    scope = scope.where("revenue <= ?", user.mandate_max_revenue) if user.mandate_max_revenue.present?
+    scope = scope.where("asking_price >= ?", user.ev_min) if user.ev_min.present?
+    scope = scope.where("asking_price <= ?", user.ev_max) if user.ev_max.present?
     scope.order(created_at: :desc)
   end
 

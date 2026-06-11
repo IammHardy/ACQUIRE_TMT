@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_11_170000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_11_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -140,6 +140,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_170000) do
     t.bigint "mandate_min_revenue"
     t.bigint "mandate_max_revenue"
     t.string "mandate_location"
+    t.string "buyer_type"
+    t.string "phone"
+    t.string "occupation"
+    t.text "bio"
+    t.string "experience_level"
+    t.string "funding_sources", default: [], null: false, array: true
+    t.string "personal_liquidity"
+    t.bigint "ev_min"
+    t.bigint "ev_max"
+    t.bigint "ebitda_min"
+    t.bigint "ebitda_max"
+    t.string "geographic_focus", default: [], null: false, array: true
+    t.text "additional_context"
+    t.string "approval_status", default: "incomplete", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 

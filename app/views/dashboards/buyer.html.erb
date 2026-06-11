@@ -1,78 +1,29 @@
 <% content_for :title, "Buyer dashboard" %>
-<% revenue_options = [["No min", nil], ["$500K", 500_000], ["$1M", 1_000_000], ["$3M", 3_000_000], ["$5M", 5_000_000], ["$10M", 10_000_000], ["$25M", 25_000_000]] %>
 
 <section class="min-h-screen bg-brand-50 py-12">
   <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-300">Buyer dashboard</p>
-        <h1 class="mt-2 font-serif text-4xl font-medium text-brand-900">Welcome, <%= @user.display_name %></h1>
+        <h1 class="font-serif text-4xl font-medium text-brand-900">Welcome, <%= @user.display_name %></h1>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          Here are our current and upcoming sell-side mandates. Select one to learn more and view next steps.
+        </p>
       </div>
       <div class="flex items-center gap-3">
+        <%= link_to "Edit mandate", onboarding_path, class: "text-sm font-semibold text-brand-700 hover:underline" %>
         <%= link_to "Settings", settings_path, class: "text-sm font-semibold text-brand-700 hover:underline" %>
         <%= button_to "Sign out", session_path, method: :delete,
           class: "w-fit rounded-sm border border-brand-100 bg-white px-4 py-2 text-sm font-bold text-brand-900 hover:bg-brand-50" %>
       </div>
     </div>
 
-    <% if notice.present? %>
-      <p class="mt-6 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"><%= notice %></p>
-    <% end %>
-
-    <!-- Acquisition mandate -->
-    <div class="mt-8 rounded-sm border border-brand-100 bg-white p-8 shadow-soft">
-      <h2 class="font-serif text-2xl font-medium text-brand-900">Your acquisition mandate</h2>
-      <p class="mt-1 text-sm text-slate-600">Tell us what you're looking for and we'll curate the deal feed below.</p>
-
-      <%= form_with model: @user, url: buyer_mandate_path, method: :patch do |f| %>
-        <p class="mt-6 text-sm font-semibold text-brand-900">Sectors of interest</p>
-        <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-          <% ValuationData::SECTORS.each do |slug, sector| %>
-            <label class="cursor-pointer rounded-sm border border-brand-100 px-3 py-2.5 text-sm font-semibold text-brand-900 transition hover:border-brand-300 has-[:checked]:border-brand-300 has-[:checked]:bg-brand-50">
-              <%= check_box_tag "user[mandate_industries][]", slug, @user.mandate_industries.include?(slug), class: "sr-only" %>
-              <%= sector["name"] %>
-            </label>
-          <% end %>
-        </div>
-
-        <div class="mt-6 grid gap-4 sm:grid-cols-3">
-          <div>
-            <%= f.label :mandate_min_revenue, "Min revenue", class: "block text-sm font-semibold text-brand-900" %>
-            <%= f.select :mandate_min_revenue, options_for_select(revenue_options, @user.mandate_min_revenue),
-              {}, class: "mt-1 w-full rounded-sm border border-brand-100 px-4 py-2.5 text-sm text-brand-900" %>
-          </div>
-          <div>
-            <%= f.label :mandate_max_revenue, "Max revenue", class: "block text-sm font-semibold text-brand-900" %>
-            <%= f.select :mandate_max_revenue, options_for_select([["No max", nil]] + revenue_options[1..], @user.mandate_max_revenue),
-              {}, class: "mt-1 w-full rounded-sm border border-brand-100 px-4 py-2.5 text-sm text-brand-900" %>
-          </div>
-          <div>
-            <%= f.label :mandate_location, "Geography (optional)", class: "block text-sm font-semibold text-brand-900" %>
-            <%= f.text_field :mandate_location, placeholder: "e.g. US, Remote",
-              class: "mt-1 w-full rounded-sm border border-brand-100 px-4 py-2.5 text-sm text-brand-900" %>
-          </div>
-        </div>
-
-        <%= f.submit "Save mandate",
-          class: "mt-6 cursor-pointer rounded-sm bg-brand-900 px-6 py-3 text-sm font-bold text-white transition hover:bg-brand-500" %>
-      <% end %>
-    </div>
-
-    <!-- Curated deal feed -->
-    <div class="mt-8">
-      <div class="flex items-end justify-between">
+    <% if @user.approved? %>
+      <!-- Approved: full deal feed -->
+      <div class="mt-8 flex items-end justify-between">
         <h2 class="font-serif text-3xl font-medium text-brand-900">Your deal feed</h2>
         <p class="text-sm text-slate-500"><%= pluralize(@deals.size, "deal") %></p>
       </div>
-      <% if @user.mandate_set? %>
-        <p class="mt-1 text-sm text-slate-500">We'll email you the moment a new deal matches your mandate.</p>
-      <% end %>
-
-      <% unless @user.mandate_set? %>
-        <p class="mt-4 rounded-sm border border-brand-100 bg-white px-5 py-4 text-sm text-slate-600">
-          Set your sectors above to curate this feed. Showing all active deals for now.
-        </p>
-      <% end %>
+      <p class="mt-1 text-sm text-slate-500">We'll email you the moment a new deal matches your mandate.</p>
 
       <% if @deals.any? %>
         <div class="mt-6 grid gap-5 lg:grid-cols-2">
@@ -83,6 +34,32 @@
           No active deals match your mandate yet — we'll alert you when one does.
         </p>
       <% end %>
-    </div>
+    <% else %>
+      <!-- Pending review: blurred feed behind an "Application received" notice -->
+      <div class="relative mt-8">
+        <div class="pointer-events-none select-none blur-sm">
+          <div class="grid gap-5 lg:grid-cols-2">
+            <%= render partial: "deals/card", collection: Deal.active.order(created_at: :desc).limit(4), as: :deal %>
+          </div>
+        </div>
+
+        <div class="absolute inset-0 flex items-start justify-center px-4 pt-12">
+          <div class="w-full max-w-lg rounded-sm border border-brand-100 bg-white p-8 text-center shadow-soft">
+            <%= lucide_icon "clock", class: "mx-auto h-7 w-7 text-brand-500" %>
+            <h3 class="mt-4 font-serif text-3xl font-medium text-brand-900">
+              <%= @user.approval_status == "declined" ? "Application not approved" : "Application received" %>
+            </h3>
+            <% if @user.approval_status == "declined" %>
+              <p class="mt-3 text-sm leading-6 text-slate-600">Your buyer profile wasn't approved for the network at this time.</p>
+            <% else %>
+              <p class="mt-3 text-sm leading-6 text-slate-600">
+                Your account has been created and is pending review by the AcquireTMT team.
+                We'll notify you via email as soon as your account has been approved.
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
 </section>

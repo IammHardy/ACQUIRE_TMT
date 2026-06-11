@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   get   "dashboard", to: "dashboards#show", as: :dashboard
   patch "dashboard/mandate", to: "buyer_mandates#update", as: :buyer_mandate
 
+  get   "onboarding", to: "onboarding#show", as: :onboarding
+  patch "onboarding", to: "onboarding#update"
+
   get   "settings", to: "settings#show", as: :settings
   patch "settings", to: "settings#update"
   patch "settings/password", to: "settings#update_password", as: :settings_password
@@ -43,6 +46,12 @@ Rails.application.routes.draw do
     resources :leads, only: [:index, :show, :update]
     resources :deals
     resources :deal_accesses, only: [:index] do
+      member do
+        patch :approve
+        patch :decline
+      end
+    end
+    resources :buyers, only: [:index] do
       member do
         patch :approve
         patch :decline

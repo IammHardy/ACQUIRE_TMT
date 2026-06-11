@@ -5,6 +5,7 @@ class DashboardsController < ApplicationController
   def show
     @user = Current.user
     if @user.buyer?
+      return redirect_to onboarding_path unless @user.onboarded?
       @deals = Deal.for_buyer(@user)
       render :buyer
     else
