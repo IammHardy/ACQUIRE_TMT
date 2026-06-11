@@ -9,12 +9,7 @@
           Here are our current and upcoming sell-side mandates. Select one to learn more and view next steps.
         </p>
       </div>
-      <div class="flex items-center gap-3">
-        <%= link_to "Edit mandate", onboarding_path, class: "text-sm font-semibold text-brand-700 hover:underline" %>
-        <%= link_to "Settings", settings_path, class: "text-sm font-semibold text-brand-700 hover:underline" %>
-        <%= button_to "Sign out", session_path, method: :delete,
-          class: "w-fit rounded-sm border border-brand-100 bg-white px-4 py-2 text-sm font-bold text-brand-900 hover:bg-brand-50" %>
-      </div>
+      <%= link_to "Edit mandate", onboarding_path, class: "text-sm font-semibold text-brand-700 hover:underline" %>
     </div>
 
     <% if @user.approved? %>

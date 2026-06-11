@@ -1,4 +1,5 @@
 class DashboardsController < ApplicationController
+  layout "dashboard"
   before_action :require_authentication
 
   # Single entry point that renders the buyer or seller dashboard by role.

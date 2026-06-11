@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Dashboard — AcquireTMT" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-brand-50">
+    <%
+      nav = if Current.user&.buyer?
+        [["Home", dashboard_path, "house"], ["My Deals", my_deals_path, "handshake"], ["Settings", settings_path, "settings"]]
+      else
+        [["Home", dashboard_path, "house"], ["Settings", settings_path, "settings"]]
+      end
+    %>
+    <div class="lg:flex">
+      <!-- Sidebar -->
+      <aside class="hidden w-64 shrink-0 flex-col border-r border-brand-100 bg-white lg:flex lg:min-h-screen">
+        <%= link_to root_path, class: "flex items-center gap-2 px-6 py-6 font-serif text-2xl font-semibold text-brand-900" do %>
+          Acquire<span class="text-brand-300">TMT</span>
+        <% end %>
+
+        <nav class="mt-2 flex-1 space-y-1 px-3">
+          <% nav.each do |label, path, icon| %>
+            <%= link_to path, class: "flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-semibold transition #{current_page?(path) ? "bg-brand-50 text-brand-900" : "text-slate-600 hover:bg-brand-50 hover:text-brand-900"}" do %>
+              <%= lucide_icon icon, class: "h-5 w-5" %>
+              <%= label %>
+            <% end %>
+          <% end %>
+        </nav>
+
+        <div class="border-t border-brand-100 p-4">
+          <div class="flex items-center gap-3">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-900 text-xs font-bold text-white">
+              <%= Current.user.display_name.split.map { |w| w[0] }.first(2).join.upcase %>
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-semibold text-brand-900"><%= Current.user.display_name %></p>
+              <p class="truncate text-xs text-slate-500"><%= Current.user.email_address %></p>
+            </div>
+            <%= button_to session_path, method: :delete, form: { class: "contents" },
+              class: "shrink-0 rounded-sm p-1.5 text-slate-400 hover:bg-brand-50 hover:text-brand-900", aria: { label: "Sign out" } do %>
+              <%= lucide_icon "log-out", class: "h-4 w-4" %>
+            <% end %>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Mobile top bar -->
+      <header class="flex items-center justify-between border-b border-brand-100 bg-white px-4 py-3 lg:hidden">
+        <%= link_to root_path, class: "font-serif text-xl font-semibold text-brand-900" do %>
+          Acquire<span class="text-brand-300">TMT</span>
+        <% end %>
+        <div class="flex items-center gap-4 text-sm font-semibold">
+          <% nav.each do |label, path, _icon| %>
+            <%= link_to label, path, class: "#{current_page?(path) ? "text-brand-900" : "text-slate-500"}" %>
+          <% end %>
+          <%= button_to "Sign out", session_path, method: :delete, form: { class: "contents" }, class: "text-slate-500" %>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="min-h-screen flex-1">
+        <% if notice.present? %>
+          <div class="mx-auto max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
+            <p class="rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"><%= notice %></p>
+          </div>
+        <% end %>
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>

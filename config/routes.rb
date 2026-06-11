@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   patch "settings", to: "settings#update"
   patch "settings/password", to: "settings#update_password", as: :settings_password
 
+  get "my-deals", to: "deals#mine", as: :my_deals
   resources :deals, only: %i[show] do
     post :request_access, on: :member
   end

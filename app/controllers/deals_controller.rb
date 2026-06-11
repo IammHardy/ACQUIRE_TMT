@@ -1,6 +1,12 @@
 class DealsController < ApplicationController
+  layout "dashboard"
   before_action :require_authentication
-  before_action :set_deal
+  before_action :set_deal, only: %i[show request_access]
+
+  # Deals the buyer is engaged with (requested / approved / declined).
+  def mine
+    @accesses = Current.user.deal_accesses.includes(:deal).order(created_at: :desc)
+  end
 
   def show
     @access = Current.user.deal_accesses.find_by(deal: @deal)

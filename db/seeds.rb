@@ -245,7 +245,9 @@ DEALS = [
     highlights: ["Embedded MDR/EDR security", "90%+ recurring revenue", "PE platform-ready"] }
 ].freeze
 
+GREEK = %w[Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa].freeze
+
 Deal.delete_all
-DEALS.each { |attrs| Deal.create!(attrs) }
+DEALS.each_with_index { |attrs, i| Deal.create!(attrs.merge(codename: GREEK[i % GREEK.size])) }
 
 puts "Seeded #{Deal.count} deal listings."

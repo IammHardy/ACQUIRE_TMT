@@ -26,6 +26,11 @@ class Deal < ApplicationRecord
     ValuationData.sector(industry)["name"]
   end
 
+  # OffDeal-style anonymized project label, e.g. "PROJECT EPSILON".
+  def project_label
+    "PROJECT #{(codename.presence || reference).upcase}"
+  end
+
   def status_label
     status.tr("_", " ")
   end
