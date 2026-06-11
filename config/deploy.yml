@@ -35,6 +35,14 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
+    # Postgres password for the production database (config/database.yml).
+    - ACQUIRE_TMT_DATABASE_PASSWORD
+    # Powers the AI tools (valuation/comps/buyers). Without it the tools 503.
+    - ANTHROPIC_API_KEY
+    # Admin HTTP Basic auth. ADMIN_PASSWORD must be set & non-default in
+    # production or the admin area fails closed (Admin::BaseController).
+    - ADMIN_USERNAME
+    - ADMIN_PASSWORD
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
