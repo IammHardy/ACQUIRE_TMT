@@ -29,6 +29,9 @@ export default class extends Controller {
     "industryTag",
     "industryLabel",
     "analysisSummary",
+    "valuationMethod",
+    "sizeBand",
+    "asOf",
     "signalsList",
     "rowBlendedRange",
     "rowBlendedNote",
@@ -220,6 +223,10 @@ this.recordAttempt()
     this.setText("rowEarningsMult", v.implied_earnings_multiple ? `${v.implied_earnings_multiple}x` : "—")
     this.setText("rowRevenueBase", `${this.formatCurrency(v.revenue)} revenue`)
     this.setText("rowRevenueMult", v.implied_revenue_multiple ? `${v.implied_revenue_multiple}x` : "—")
+
+    if (v.method) this.setText("valuationMethod", v.method)
+    if (v.size_band) this.setText("sizeBand", v.size_band)
+    if (v.as_of) this.setText("asOf", v.as_of)
 
     this.companyNameTargets.forEach((t) => {
       if (a.company_name) t.textContent = a.company_name

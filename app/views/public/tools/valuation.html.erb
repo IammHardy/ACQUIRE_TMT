@@ -475,6 +475,33 @@
           </table>
         </div>
 
+        <!-- Methodology & sources -->
+        <div class="mt-8 rounded-sm border border-brand-100 bg-brand-50 p-6 text-sm leading-6 text-slate-600">
+          <p class="font-semibold text-brand-900">How this estimate is calculated</p>
+          <p class="mt-2">
+            <span data-valuation-target="valuationMethod">Size-adjusted blend of earnings and revenue multiples</span>
+            for your <span class="font-semibold text-brand-900" data-valuation-target="sizeBand">size band</span>.
+            Multiples are calibrated to private-market transaction data and public sector benchmarks
+            (data as of <span data-valuation-target="asOf">Q1 2026</span>):
+          </p>
+          <ul class="mt-3 space-y-1.5">
+            <% ValuationData::SOURCES.each do |src| %>
+              <li class="flex gap-2">
+                <span class="text-brand-300">•</span>
+                <span>
+                  <%= link_to src["name"], src["url"], target: "_blank", rel: "noopener",
+                        class: "font-semibold text-brand-500 hover:underline" %>
+                  <span class="text-slate-500">(<%= src["as_of"] %>) — <%= src["role"] %></span>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+          <p class="mt-3 text-xs text-slate-500">
+            A preliminary estimate for guidance only, not a formal valuation. Public-company multiples are
+            discounted for private-company size and illiquidity.
+          </p>
+        </div>
+
         <div class="mx-auto mt-10 max-w-xl rounded-sm bg-brand-900 p-7 text-white shadow-soft">
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-300">
             Claim your free M&A expert session

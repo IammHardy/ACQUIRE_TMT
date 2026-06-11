@@ -1,69 +1,69 @@
-# Heuristic v1 valuation engine for TMT businesses.
+# Valuation engine for TMT small businesses.
 #
-# Produces a low / midpoint / high enterprise-value range by blending an
-# earnings (EBITDA/SDE) multiple with a revenue multiple, weighted by how
-# recurring-revenue-driven the sector is. Multiples are illustrative TMT
-# benchmarks (Pepperdine/BizBuySell-style), to be replaced by real comps data.
+# Produces a low / midpoint / high enterprise-value range by blending a
+# size-adjusted earnings (EBITDA/SDE) multiple with a sector revenue multiple.
+# All multiples come from ValuationData, which is calibrated to free public
+# datasets (Damodaran sector relativity + BizBuySell Main Street + Pepperdine
+# lower-middle market) — see that file for provenance.
+#
+# Unlike a flat per-sector table, the earnings multiple scales with business
+# size (a $200K-SDE shop and a $10M-EBITDA company price very differently),
+# which is how private M&A actually works.
 class ValuationEngine
-  # ebitda: [low, mid, high] earnings multiples
-  # revenue: [low, mid, high] revenue multiples
-  # weight: fraction of the blend driven by the revenue method (0..1)
-  MULTIPLES = {
-    "saas"                 => { ebitda: [8, 12, 16], revenue: [2.5, 4.0, 6.0], weight: 0.6 },
-    "msp-it-services"      => { ebitda: [5, 7, 9],   revenue: [1.0, 1.5, 2.5], weight: 0.3 },
-    "telecom-connectivity" => { ebitda: [5, 7, 10],  revenue: [1.5, 2.5, 4.0], weight: 0.35 },
-    "digital-media"        => { ebitda: [4, 6, 8],   revenue: [1.5, 2.5, 4.0], weight: 0.35 },
-    "cybersecurity"        => { ebitda: [8, 11, 15], revenue: [3.0, 5.0, 8.0], weight: 0.55 },
-    "data-analytics-ai"    => { ebitda: [8, 12, 16], revenue: [3.0, 5.0, 9.0], weight: 0.6 },
-    "cloud-infrastructure" => { ebitda: [7, 10, 14], revenue: [2.5, 4.0, 7.0], weight: 0.5 },
-    "adtech-martech"       => { ebitda: [6, 9, 12],  revenue: [2.0, 3.5, 6.0], weight: 0.45 },
-    "other"                => { ebitda: [4, 6, 8],   revenue: [1.0, 2.0, 3.0], weight: 0.35 }
-  }.freeze
+  # Human-readable sector names, derived from the sourced ValuationData so the
+  # other engines (CompsEngine, BuyerMatcher) share one source of truth.
+  INDUSTRY_NAMES = ValuationData::SECTORS.transform_values { |s| s["name"] }.freeze
 
-  INDUSTRY_NAMES = {
-    "saas"                 => "SaaS",
-    "msp-it-services"      => "MSP / IT Services",
-    "telecom-connectivity" => "Telecom & Connectivity",
-    "digital-media"        => "Digital Media",
-    "cybersecurity"        => "Cybersecurity",
-    "data-analytics-ai"    => "Data, Analytics & AI",
-    "cloud-infrastructure" => "Cloud Infrastructure",
-    "adtech-martech"       => "AdTech / MarTech",
-    "other"                => "Technology-enabled business"
-  }.freeze
+  # Backward-compatible representative multiples table for the comps/buyer
+  # engines and the website-analyzer sector enum. Earnings multiples are shown
+  # at a mid-size reference band ($1M–$3M); the valuation flow itself uses the
+  # full size-aware logic in #call, not this snapshot.
+  REFERENCE_EARNINGS_MULT = 4.2 # ValuationData::EARNINGS_BANDS mid band
+  MULTIPLES = ValuationData::SECTORS.to_h do |slug, s|
+    ebitda_mid  = REFERENCE_EARNINGS_MULT * s["earnings_factor"]
+    revenue_mid = s["revenue_mult"]
+    spread = ->(mid) { [mid * ValuationData::RANGE_LOW, mid, mid * ValuationData::RANGE_HIGH].map { |x| x.round(1) } }
+    [slug, { ebitda: spread.call(ebitda_mid), revenue: spread.call(revenue_mid), weight: s["revenue_weight"] }]
+  end.freeze
 
   # revenue, profit, salary_addback in dollars; industry is a slug.
   def initialize(industry:, revenue:, profit:, salary_addback: 0)
-    @industry = MULTIPLES.key?(industry) ? industry : "other"
+    @industry = ValuationData.sector_slug(industry)
     @revenue  = revenue.to_f
     @profit   = profit.to_f
     @earnings = @profit + salary_addback.to_f # adjusted earnings (SDE-style)
   end
 
   def call
-    m = MULTIPLES[@industry]
+    sector = ValuationData.sector(@industry)
+    band = ValuationData.earnings_band(@earnings)
+    w = sector["revenue_weight"]
 
-    earnings_vals = m[:ebitda].map { |x| @earnings * x }
-    revenue_vals  = m[:revenue].map { |x| @revenue * x }
-    w = m[:weight]
+    earnings_mult = band["mult"] * sector["earnings_factor"]
+    revenue_mult  = sector["revenue_mult"]
 
-    low, mid, high = [0, 1, 2].map do |i|
-      blended = earnings_vals[i] * (1 - w) + revenue_vals[i] * w
-      round_to_band(blended)
-    end
+    mid_raw = (@earnings * earnings_mult) * (1 - w) + (@revenue * revenue_mult) * w
+
+    mid  = round_to_band(mid_raw)
+    low  = round_to_band(mid_raw * ValuationData::RANGE_LOW)
+    high = round_to_band(mid_raw * ValuationData::RANGE_HIGH)
 
     {
-      "industry"        => @industry,
-      "industry_name"   => INDUSTRY_NAMES[@industry],
-      "revenue"         => @revenue.round,
-      "earnings"        => @earnings.round,
-      "margin_pct"      => margin_pct,
-      "low"             => low,
-      "midpoint"        => mid,
-      "high"            => high,
-      "implied_revenue_multiple" => safe_ratio(mid, @revenue),
+      "industry"                  => @industry,
+      "industry_name"             => sector["name"],
+      "revenue"                   => @revenue.round,
+      "earnings"                  => @earnings.round,
+      "margin_pct"                => margin_pct,
+      "size_band"                 => band["label"],
+      "low"                       => low,
+      "midpoint"                  => mid,
+      "high"                      => high,
+      "implied_revenue_multiple"  => safe_ratio(mid, @revenue),
       "implied_earnings_multiple" => safe_ratio(mid, @earnings),
-      "method" => "Blended #{(w * 100).round}% revenue / #{((1 - w) * 100).round}% earnings multiple"
+      "method"                    => "Size-adjusted blend: #{(w * 100).round}% revenue multiple / #{((1 - w) * 100).round}% earnings multiple",
+      "as_of"                     => ValuationData::AS_OF,
+      "sources"                   => ValuationData::SOURCES,
+      "public_benchmark"          => ValuationData::PUBLIC_BENCHMARKS[@industry]
     }
   end
 
