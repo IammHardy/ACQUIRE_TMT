@@ -89,30 +89,37 @@
       </p>
     </div>
 
-    <div class="mt-12 grid gap-6 lg:grid-cols-[1fr_400px]">
-      <!-- Map placeholder -->
-      <div class="flex min-h-[400px] items-center justify-center rounded-sm border border-brand-100 bg-brand-50">
-        <div class="text-center">
-          <%= lucide_icon "map", class: "mx-auto h-10 w-10 text-brand-300" %>
-          <p class="mt-3 text-sm text-slate-400">Active <%= @industry[:name] %> buyer activity across the US</p>
-        </div>
+    <div class="mt-12 grid gap-6 lg:grid-cols-[1fr_400px]" data-controller="usmap">
+      <!-- Interactive buyer-activity map -->
+      <div class="overflow-hidden rounded-sm border border-brand-100 bg-brand-50 p-4">
+        <svg viewBox="192 9 1028 746" preserveAspectRatio="xMidYMid meet" class="h-full w-full" role="img" aria-label="US buyer activity map">
+          <%= render "shared/us_map_paths" %>
+          <% @network_buyers.each_with_index do |buyer, i| %>
+            <g data-usmap-target="group" data-buyer="<%= i %>" style="transition:opacity .2s">
+              <% ctrl.cities_for(buyer.name).each do |x, y| %>
+                <circle cx="<%= x %>" cy="<%= y %>" r="8" fill="#C8A24A" fill-opacity="0.75" stroke="#FFFFFF" stroke-width="1.5" />
+              <% end %>
+            </g>
+          <% end %>
+        </svg>
       </div>
 
       <!-- Active buyers list -->
       <div class="flex flex-col rounded-sm border border-brand-100 bg-brand-50 shadow-soft">
         <div class="p-6">
           <p class="font-bold text-brand-900">Active buyers</p>
-          <p class="mt-1 text-sm text-slate-500">Platforms actively acquiring in your sector</p>
+          <p class="mt-1 text-sm text-slate-500">Select a platform to see where they're acquiring</p>
         </div>
         <div class="divide-y divide-brand-100 border-t border-brand-100">
-          <% @network_buyers.each do |buyer| %>
-            <div class="flex items-center justify-between gap-3 px-6 py-4">
+          <% @network_buyers.each_with_index do |buyer, i| %>
+            <button type="button" data-usmap-row data-buyer="<%= i %>" data-action="click->usmap#focus"
+              class="flex w-full items-center justify-between gap-3 px-6 py-4 text-left transition hover:bg-white">
               <span class="text-sm font-semibold text-brand-900"><%= buyer.name %></span>
               <span class="flex items-center gap-3">
                 <span class="text-sm text-slate-500"><%= buyer.acquisitions_count.positive? ? "#{buyer.acquisitions_count} deals" : buyer.type_label %></span>
                 <%= lucide_icon "chevron-right", class: "h-4 w-4 text-slate-400" %>
               </span>
-            </div>
+            </button>
           <% end %>
         </div>
         <div class="border-t border-brand-100 p-6">

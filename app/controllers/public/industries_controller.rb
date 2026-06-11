@@ -1,4 +1,19 @@
+require "digest"
+
 class Public::IndustriesController < ApplicationController
+  # Approximate metro coordinates in the US-map SVG space (viewBox 192 9 1028 746).
+  METROS = [
+    [239, 52], [237, 357], [310, 475], [418, 494], [540, 298], [683, 512],
+    [708, 606], [744, 133], [844, 233], [858, 407], [899, 485], [972, 730],
+    [1028, 323], [1080, 267], [1133, 217]
+  ].freeze
+
+  # A deterministic spread of metros per buyer, so each platform's "dots" are
+  # stable on the buyer-activity map.
+  def self.cities_for(seed, count = 5)
+    METROS.sort_by { |x, y| Digest::MD5.hexdigest("#{seed}:#{x}:#{y}") }.first(count)
+  end
+
   INDUSTRIES = {
     "saas" => {
       name: "SaaS",
