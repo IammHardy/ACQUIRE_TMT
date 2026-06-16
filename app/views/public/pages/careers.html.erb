@@ -32,19 +32,23 @@
       <a href="#open-roles" class="rounded-sm bg-brand-900 px-6 py-3 text-sm font-bold text-white transition hover:bg-brand-500">View open roles</a>
       <%= link_to "About us", about_path, class: "rounded-sm border border-brand-100 bg-white px-6 py-3 text-sm font-bold text-brand-900 transition hover:bg-brand-50" %>
     </div>
-    <div class="mt-12 overflow-hidden rounded-sm border border-brand-100 bg-white">
-      <div class="flex h-72 items-center justify-center text-sm text-slate-400">Team photo</div>
+    <div class="mt-12 overflow-hidden rounded-sm border border-brand-100">
+      <div class="grid grid-cols-4">
+        <% %w[neil andreas michael benjamin ericson jon nikko cielo].each do |p| %>
+          <%= image_tag "team/#{p}.jpg", class: "aspect-square w-full object-cover grayscale transition duration-500 hover:grayscale-0", alt: "AcquireTMT team", loading: "lazy" %>
+        <% end %>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- AS FEATURED IN -->
+<!-- TRUSTED BY PARTNERS (real FIH partner logos) -->
 <section class="border-y border-brand-100 bg-white py-10">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <p class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">As featured in</p>
-    <div class="mt-6 flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
-      <% ["Forbes", "TechCrunch", "Business Insider", "Yahoo Finance"].each do |name| %>
-        <span class="text-lg font-bold text-slate-400"><%= name %></span>
+    <p class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Trusted by partners across TMT</p>
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+      <% %w[partner1.jpg partner2.png partner3.svg partner4.svg partner5.png partner6.png partner7.svg partner8.png].each do |file| %>
+        <%= image_tag "partners/#{file}", class: "h-8 w-auto object-contain grayscale transition duration-500 hover:grayscale-0", alt: "FIH partner", loading: "lazy" %>
       <% end %>
     </div>
   </div>
