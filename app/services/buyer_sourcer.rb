@@ -80,8 +80,17 @@ class BuyerSourcer
 
   private
 
+  # The Apollo search (the credit-charged call) depends only on the sector, so
+  # cache the org list per sector for 24h. Claude's per-seller rationale still
+  # runs fresh on every request. Only successful, non-empty results are cached.
+  CACHE_TTL = 24.hours
+
   def fetch_orgs
-    ApolloClient.search_organizations(
+    key = "apollo_acquirers:v1:#{@industry}"
+    cached = Rails.cache.read(key)
+    return cached if cached.present?
+
+    orgs = ApolloClient.search_organizations(
       {
         q_organization_keyword_tags: SECTOR_KEYWORDS[@industry],
         organization_num_employees_ranges: ACQUIRER_EMPLOYEE_RANGES,
@@ -89,6 +98,8 @@ class BuyerSourcer
       },
       per_page: 10
     )
+    Rails.cache.write(key, orgs, expires_in: CACHE_TTL) if orgs.present?
+    orgs
   end
 
   def map_org(org)
