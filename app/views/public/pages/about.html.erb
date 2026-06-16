@@ -95,24 +95,30 @@
 </section>
 
 <!-- BACKED BY -->
-<section class="bg-brand-50 py-16">
+<%# TODO (content): replace these with FIH's REAL backers/partners, or remove. %>
+<section class="bg-brand-50 py-16 sm:py-20">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <h2 class="text-center font-serif text-3xl font-medium text-brand-900">Backed by the best</h2>
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
+    <h2 class="font-serif text-3xl font-medium text-brand-900" data-controller="reveal">Backed by the best</h2>
+    <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
       <% ["Y Combinator", "Founders Fund", "TMT Ventures", "Centre Street Partners"].each do |name| %>
-        <span class="font-serif text-xl font-medium text-slate-400"><%= name %></span>
+        <div class="hover-lift flex h-28 items-center justify-center rounded-sm border border-brand-100 bg-white px-4 text-center transition hover:shadow-soft">
+          <span class="font-serif text-lg font-medium text-slate-400"><%= name %></span>
+        </div>
       <% end %>
     </div>
   </div>
 </section>
 
 <!-- BUILT BY -->
-<section class="bg-white py-16">
+<%# TODO (content): replace with the team's REAL prior firms, or remove. %>
+<section class="bg-white py-16 sm:py-20">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <h2 class="text-center font-serif text-3xl font-medium text-brand-900">Built by investment bankers and technologists</h2>
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
+    <h2 class="font-serif text-3xl font-medium text-brand-900" data-controller="reveal">Built by investment bankers and technologists</h2>
+    <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
       <% ["Evercore", "Barclays", "Google", "Stripe", "Citadel", "Two Sigma"].each do |name| %>
-        <span class="text-lg font-bold uppercase tracking-wide text-slate-400"><%= name %></span>
+        <div class="hover-lift flex h-28 items-center justify-center rounded-sm border border-brand-100 bg-brand-50 px-4 text-center transition hover:shadow-soft">
+          <span class="text-base font-bold uppercase tracking-wide text-slate-400"><%= name %></span>
+        </div>
       <% end %>
     </div>
   </div>
