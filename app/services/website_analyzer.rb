@@ -1,4 +1,6 @@
-require "open-uri"
+require "net/http"
+require "resolv"
+require "ipaddr"
 
 # Fetches a company's homepage and uses Claude to infer its TMT industry,
 # business model, and qualitative value-driver signals. Returns a structured
@@ -102,17 +104,72 @@ class WebsiteAnalyzer
     "website_analysis:#{CACHE_VERSION}:#{host}"
   end
 
+  MAX_REDIRECTS = 3
+  MAX_BYTES = 800_000
+
+  # Fetches the page with SSRF protection: only http(s), and the host must
+  # resolve to a public IP at every redirect hop (blocks localhost, private
+  # ranges, and cloud metadata at 169.254.x). Follows redirects manually so a
+  # public URL can't bounce us to an internal address.
   def fetch_text
-    html = URI.parse(normalized_url).open(
-      "User-Agent" => "AcquireTMT-Bot/1.0",
-      open_timeout: 5,
-      read_timeout: 8,
-      redirect: true
-    ).read
-    html_to_text(html).first(8000)
+    url = normalized_url
+    MAX_REDIRECTS.times do
+      uri = URI.parse(url)
+      return "" unless safe_uri?(uri)
+
+      response = http_get(uri)
+      case response
+      when Net::HTTPRedirection
+        location = response["location"]
+        return "" if location.blank?
+        url = URI.join(url, location).to_s
+        next
+      when Net::HTTPSuccess
+        return html_to_text(response.body.to_s.first(MAX_BYTES)).first(8000)
+      else
+        return ""
+      end
+    end
+    ""
   rescue => e
     Rails.logger.warn("[WebsiteAnalyzer] fetch failed: #{e.class}: #{e.message}")
     ""
+  end
+
+  def http_get(uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = uri.scheme == "https"
+    http.open_timeout = 5
+    http.read_timeout = 8
+    request = Net::HTTP::Get.new(uri)
+    request["User-Agent"] = "AcquireTMT-Bot/1.0"
+    http.request(request)
+  end
+
+  def safe_uri?(uri)
+    return false unless %w[http https].include?(uri.scheme)
+    return false if uri.host.blank?
+
+    addresses = Resolv.getaddresses(uri.host)
+    return false if addresses.empty?
+
+    addresses.none? { |addr| blocked_ip?(addr) }
+  rescue StandardError
+    false
+  end
+
+  # Reject loopback, private, link-local (incl. 169.254.169.254 metadata),
+  # CGNAT and unspecified addresses.
+  def blocked_ip?(addr)
+    ip = IPAddr.new(addr.to_s)
+    return true if ip.loopback? || ip.private? || ip.link_local?
+
+    if ip.ipv4?
+      return true if IPAddr.new("100.64.0.0/10").include?(ip) || IPAddr.new("0.0.0.0/8").include?(ip)
+    end
+    false
+  rescue IPAddr::Error
+    true
   end
 
   def html_to_text(html)

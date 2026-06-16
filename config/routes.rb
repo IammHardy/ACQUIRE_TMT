@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   resources :deals, only: %i[show] do
     post :request_access, on: :member
     post :sign_nda, on: :member
+    resources :documents, only: %i[show], controller: "deal_documents"
   end
 
   root "public/pages#home"

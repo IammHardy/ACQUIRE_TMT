@@ -55,7 +55,7 @@
                   <span class="flex items-center gap-3 text-sm text-slate-700">
                     <%= lucide_icon "file-text", class: "h-4 w-4 text-brand-500" %><%= doc.title %>
                   </span>
-                  <%= link_to "Download", rails_blob_path(doc.file, disposition: "attachment"),
+                  <%= link_to "Download", deal_document_path(@deal, doc),
                     class: "text-sm font-semibold text-brand-500 hover:underline" %>
                 </div>
               <% end %>
