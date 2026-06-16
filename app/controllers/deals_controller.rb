@@ -1,6 +1,7 @@
 class DealsController < ApplicationController
   layout "dashboard"
   before_action :require_authentication
+  before_action :require_approved_buyer
   before_action :set_deal, only: %i[show request_access sign_nda]
 
   # Deals the buyer is engaged with (requested / approved / declined).
@@ -30,6 +31,14 @@ class DealsController < ApplicationController
   end
 
   private
+
+  # Deals (and the data room) are only for approved buyers — not sellers, and
+  # not buyers still pending review.
+  def require_approved_buyer
+    return if Current.user&.buyer? && Current.user.approved?
+
+    redirect_to dashboard_path, alert: "Your buyer account must be approved before you can view deals."
+  end
 
   def set_deal
     @deal = Deal.find(params[:id])
