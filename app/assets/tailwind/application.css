@@ -80,6 +80,13 @@
     }
   }
 
+  /* Turbo navigation progress bar (top of page during page loads) */
+  .turbo-progress-bar {
+    height: 3px;
+    background: linear-gradient(to right, var(--color-brand-300), var(--color-brand-500));
+    box-shadow: 0 0 8px rgba(200, 162, 74, 0.6);
+  }
+
   /* Full-screen preloader (see preloader_controller.js) */
   .preloader {
     position: fixed;
