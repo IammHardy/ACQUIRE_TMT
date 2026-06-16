@@ -196,6 +196,8 @@ class Public::IndustriesController < ApplicationController
 
     @slug = params[:slug]
     @network_buyers = Buyer.active.where("? = ANY (sectors)", @slug).order(acquisitions_count: :desc).limit(6)
+    # Fuller set for the scrolling "buyers in our network" marquee.
+    @network_logos = Buyer.active.order(:name)
 
     # Use the per-industry hero photo when one exists (falls back to gradient).
     image = "industries/#{@slug}.jpg"
