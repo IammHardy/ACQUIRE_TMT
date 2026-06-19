@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_11_220000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_16_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -116,9 +116,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_220000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "codename"
+    t.bigint "user_id"
     t.index ["industry"], name: "index_deals_on_industry"
     t.index ["reference"], name: "index_deals_on_reference", unique: true
     t.index ["status"], name: "index_deals_on_status"
+    t.index ["user_id"], name: "index_deals_on_user_id"
   end
 
   create_table "leads", force: :cascade do |t|
@@ -138,6 +140,31 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_220000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_leads_on_user_id"
+  end
+
+  create_table "meetings", force: :cascade do |t|
+    t.bigint "deal_id", null: false
+    t.string "buyer_name", null: false
+    t.datetime "scheduled_at"
+    t.string "note"
+    t.string "status", default: "scheduled", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_id"], name: "index_meetings_on_deal_id"
+  end
+
+  create_table "offers", force: :cascade do |t|
+    t.bigint "deal_id", null: false
+    t.string "buyer_name", null: false
+    t.string "buyer_kind"
+    t.bigint "purchase_price"
+    t.integer "upfront_cash_pct"
+    t.integer "seller_note_pct"
+    t.integer "equity_rollover_pct"
+    t.string "status", default: "new", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deal_id"], name: "index_offers_on_deal_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -204,7 +231,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_220000) do
   add_foreign_key "deal_accesses", "deals"
   add_foreign_key "deal_accesses", "users"
   add_foreign_key "deal_documents", "deals"
+  add_foreign_key "deals", "users"
   add_foreign_key "leads", "users"
+  add_foreign_key "meetings", "deals"
+  add_foreign_key "offers", "deals"
   add_foreign_key "sessions", "users"
   add_foreign_key "tool_runs", "leads"
   add_foreign_key "tool_runs", "users"

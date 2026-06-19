@@ -3,8 +3,11 @@
 class Deal < ApplicationRecord
   STATUSES = %w[active under_offer sold].freeze
 
+  belongs_to :seller, class_name: "User", foreign_key: :user_id, optional: true
   has_many :deal_accesses, dependent: :destroy
   has_many :deal_documents, dependent: :destroy
+  has_many :offers, dependent: :destroy
+  has_many :meetings, dependent: :destroy
 
   validates :reference, :title, :industry, presence: true
   validates :reference, uniqueness: true

@@ -37,6 +37,91 @@
       <% end %>
     </div>
 
+    <!-- Deal activity (only when this seller has a live listing) -->
+    <% if @seller_deal %>
+      <% offers = @seller_deal.offers.order(created_at: :desc) %>
+      <% meetings = @seller_deal.meetings.upcoming %>
+      <% nda_requests = @seller_deal.deal_accesses.where(status: "requested").includes(:user) %>
+      <div class="mt-8 rounded-sm border border-brand-100 bg-white p-8 shadow-soft" data-controller="tabs">
+        <h2 class="font-serif text-2xl font-medium text-brand-900">Your deal · <%= @seller_deal.project_label %></h2>
+        <p class="mt-1 text-sm text-slate-600">Track everything happening on your sale, from first interest to closed offers.</p>
+
+        <div class="mt-6 flex flex-wrap gap-2">
+          <% [["Offers", offers.size], ["Upcoming Meetings", meetings.size], ["NDA Requests", nda_requests.size]].each_with_index do |(label, count), i| %>
+            <button type="button" data-action="tabs#show" data-tabs-index="<%= i %>" data-tabs-target="tab"
+              class="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition <%= i.zero? ? "bg-brand-900 text-white" : "bg-brand-50 text-brand-900" %>">
+              <%= label %>
+              <span class="rounded-full bg-black/10 px-2 py-0.5 text-xs"><%= count %></span>
+            </button>
+          <% end %>
+        </div>
+
+        <!-- Offers -->
+        <div data-tabs-target="panel" data-index="0" class="mt-6">
+          <% if offers.any? %>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <% offers.each do |offer| %>
+                <div class="rounded-sm border border-brand-100 bg-brand-50 p-5">
+                  <p class="font-serif text-xl font-medium text-brand-900"><%= offer.buyer_name %></p>
+                  <p class="text-xs font-semibold uppercase tracking-wide text-brand-500"><%= offer.buyer_kind %></p>
+                  <div class="mt-4 space-y-2 border-t border-brand-100 pt-4 text-sm">
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-500">Purchase price</span>
+                      <span class="font-bold text-brand-900"><%= number_to_currency(offer.purchase_price.to_i, precision: 0) %></span>
+                    </div>
+                    <% offer.structure_label.each do |label, value| %>
+                      <div class="flex items-center justify-between">
+                        <span class="text-slate-500"><%= label %></span>
+                        <span class="font-bold text-brand-900"><%= value %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                  <button type="button" class="mt-4 w-full rounded-sm bg-brand-900 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-500">Review offer</button>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-sm text-slate-400">No offers yet — they'll appear here as buyers submit them.</p>
+          <% end %>
+        </div>
+
+        <!-- Upcoming meetings -->
+        <div data-tabs-target="panel" data-index="1" class="mt-6 hidden">
+          <% if meetings.any? %>
+            <div class="divide-y divide-brand-100 border-t border-brand-100">
+              <% meetings.each do |meeting| %>
+                <div class="flex items-center justify-between gap-4 py-4">
+                  <div>
+                    <p class="font-semibold text-brand-900"><%= meeting.buyer_name %></p>
+                    <% if meeting.note.present? %><p class="text-sm text-slate-500"><%= meeting.note %></p><% end %>
+                  </div>
+                  <span class="text-sm text-slate-500"><%= meeting.scheduled_at ? meeting.scheduled_at.strftime("%d %b %Y, %I:%M %p") : "To be scheduled" %></span>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-sm text-slate-400">No upcoming meetings.</p>
+          <% end %>
+        </div>
+
+        <!-- NDA requests -->
+        <div data-tabs-target="panel" data-index="2" class="mt-6 hidden">
+          <% if nda_requests.any? %>
+            <div class="divide-y divide-brand-100 border-t border-brand-100">
+              <% nda_requests.each do |req| %>
+                <div class="flex items-center justify-between gap-4 py-4">
+                  <p class="font-semibold text-brand-900"><%= req.user&.display_name || "Buyer" %></p>
+                  <span class="text-sm text-slate-500">Requested <%= req.created_at.strftime("%d %b %Y") %></span>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-sm text-slate-400">No NDA requests yet.</p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <div class="mt-8 grid gap-6 lg:grid-cols-3">
       <% [
         ["Business Valuation", "Get an instant TMT valuation range.", tools_valuation_path, "trending-up"],
