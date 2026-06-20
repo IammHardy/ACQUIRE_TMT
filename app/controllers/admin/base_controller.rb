@@ -1,4 +1,5 @@
 class Admin::BaseController < ApplicationController
+  layout "admin"
   before_action :authenticate_admin
 
   INSECURE_DEFAULT_PASSWORD = "change-me-in-production".freeze
