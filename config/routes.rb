@@ -54,6 +54,8 @@ Rails.application.routes.draw do
     resources :leads, only: [:index, :show, :update]
     resources :deals do
       resources :documents, only: [:create, :destroy], controller: "deal_documents"
+      resources :offers, only: [:create, :destroy]
+      resources :meetings, only: [:create, :destroy]
     end
     resources :deal_accesses, only: [:index] do
       member do

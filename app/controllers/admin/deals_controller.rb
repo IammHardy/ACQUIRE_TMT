@@ -53,7 +53,7 @@ class Admin::DealsController < Admin::BaseController
   def deal_params
     permitted = params.require(:deal).permit(
       :reference, :title, :industry, :revenue, :ebitda, :asking_price,
-      :location, :teaser, :recurring, :status, :highlights_text
+      :location, :teaser, :recurring, :status, :highlights_text, :user_id
     )
     # `highlights` is an array column; the form edits it as newline-separated text.
     permitted[:highlights] = permitted.delete(:highlights_text).to_s.split("\n").map(&:strip).reject(&:blank?)

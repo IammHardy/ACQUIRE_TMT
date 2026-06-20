@@ -25,6 +25,12 @@
       <%= f.select :status, Deal::STATUSES.map { |s| [s.tr("_", " ").capitalize, s] }, {}, class: input %>
     </div>
     <div>
+      <%= f.label :user_id, "Seller (owner)", class: "block text-sm font-bold text-slate-700" %>
+      <%= f.select :user_id,
+        User.where(role: "seller").order(:email_address).map { |u| ["#{u.display_name} (#{u.email_address})", u.id] },
+        { include_blank: "— None —" }, class: input %>
+    </div>
+    <div>
       <%= f.label :revenue, class: "block text-sm font-bold text-slate-700" %>
       <%= f.number_field :revenue, class: input %>
     </div>
