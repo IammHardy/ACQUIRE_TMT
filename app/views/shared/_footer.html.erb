@@ -13,7 +13,7 @@
         <% {
           "Sell" => [["Sell Your TMT Business", sell_path], ["Find Buyers", tools_find_buyers_path], ["Valuation Snapshot", tools_valuation_path]],
           "Buy" => [["Buyer Network", buyers_path], ["Market Comps", tools_market_comps_path]],
-          "Industries" => [["SaaS", industry_path("saas")], ["MSP / IT Services", industry_path("msp-it-services")], ["Telecom", industry_path("telecom-connectivity")], ["Digital Media", industry_path("digital-media")]],
+          "Industries" => Public::IndustriesController::INDUSTRIES.map { |slug, data| [data[:name], industry_path(slug)] },
           "Company" => [["About", about_path], ["Careers", careers_path], ["Insights", insights_path], ["Contact", contact_path]]
         }.each do |heading, links| %>
           <div>
