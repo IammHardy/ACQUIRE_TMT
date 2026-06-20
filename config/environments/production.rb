@@ -46,12 +46,13 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
-  # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :solid_cache_store
-
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
+  # Single-instance Railway deploy on one Postgres: use in-process cache + jobs
+  # rather than the Solid (DB-backed) stores, which require separate schemas that
+  # don't load cleanly when cache/queue/cable share one database. If this ever
+  # scales to multiple instances, switch back to Solid (with its tables created)
+  # or Redis.
+  config.cache_store = :memory_store
+  config.active_job.queue_adapter = :async
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

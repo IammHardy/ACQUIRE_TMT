@@ -79,8 +79,10 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  # Railway provides a single Postgres via DATABASE_URL. Solid Cache/Queue/Cable
-  # share that database (they create their own tables), so one Postgres is enough.
+  # Railway provides a single Postgres via DATABASE_URL. Cache/jobs/cable run
+  # in-process (see config/environments/production.rb), so these extra entries
+  # exist only so the Solid gem models can resolve a connection at boot — their
+  # tables are never used.
   primary: &primary_production
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
