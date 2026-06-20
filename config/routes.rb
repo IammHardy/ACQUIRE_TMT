@@ -36,6 +36,9 @@ Rails.application.routes.draw do
     get "about", to: "pages#about"
     get "careers", to: "pages#careers"
     get "contact", to: "pages#contact"
+    get "privacy", to: "pages#privacy"
+    get "terms", to: "pages#terms"
+    get "disclaimer", to: "pages#disclaimer"
 
     get "tools/find-buyers", to: "tools#find_buyers"
     get "tools/valuation", to: "tools#valuation"
