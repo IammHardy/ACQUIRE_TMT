@@ -18,7 +18,7 @@
         <%= link_to root_path, class: "font-serif text-xl font-semibold" do %>Acquire<span class="text-brand-300">TMT</span><% end %>
         <span class="rounded-sm bg-white/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-brand-300">Admin</span>
         <nav class="flex flex-wrap items-center gap-1 text-sm font-semibold">
-          <% [["Leads", admin_leads_path], ["Deals", admin_deals_path], ["Buyers", admin_buyers_path], ["Sellers", admin_sellers_path], ["Acquirers", admin_acquirers_path], ["Access requests", admin_deal_accesses_path]].each do |label, path| %>
+          <% [["Leads", admin_leads_path], ["Deals", admin_deals_path], ["Buyers", admin_buyers_path], ["Acquirers", admin_acquirers_path], ["Access requests", admin_deal_accesses_path]].each do |label, path| %>
             <%= link_to label, path, class: "rounded-sm px-3 py-1.5 transition #{request.path.start_with?(path) ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"}" %>
           <% end %>
         </nav>

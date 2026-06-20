@@ -59,7 +59,6 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy", as: :logout
 
     resources :leads, only: [:index, :show, :update]
-    resources :sellers, only: [:index]
     resources :deals do
       resources :documents, only: [:create, :destroy], controller: "deal_documents"
       resources :offers, only: [:create, :destroy]
