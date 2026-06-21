@@ -28,12 +28,12 @@ class DashboardsController < ApplicationController
   # company and a seeded Buyer record present identically.
   PotentialBuyer = Struct.new(:name, :category, :thesis, :acquisitions_count, :backed_by, keyword_init: true)
 
-  # Live Apollo companies when configured (part of the Find Buyers engine),
-  # otherwise the curated seeded acquirers.
+  # Live sourced companies when a provider (Consulti/Apollo) is configured (part
+  # of the Find Buyers engine), otherwise the curated seeded acquirers.
   def potential_buyers_for(sector)
     return [] if sector.blank?
 
-    if ApolloClient.configured? && (sourced = BuyerSourcer.new(industry: sector, revenue: 0).call)
+    if BuyerSourcer.live? && (sourced = BuyerSourcer.new(industry: sector, revenue: 0).call)
       Array(sourced["buyers"]).map do |b|
         PotentialBuyer.new(name: b["name"], category: "Corporate", thesis: b["rationale"], acquisitions_count: 0, backed_by: nil)
       end

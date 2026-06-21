@@ -140,9 +140,9 @@ class Public::ToolsController < ApplicationController
     end
 
     analysis = WebsiteAnalyzer.new(website).call
-    # Prefer live Apollo data (+ Claude fit ranking) when configured; otherwise
-    # fall back to the seeded Buyer dataset.
-    buyers = (ApolloClient.configured? &&
+    # Prefer live data (Consulti/Apollo, + Claude fit ranking) when configured;
+    # otherwise fall back to the seeded Buyer dataset.
+    buyers = (BuyerSourcer.live? &&
               BuyerSourcer.new(industry: analysis["industry"], revenue: revenue, analysis: analysis).call) ||
              BuyerMatcher.new(industry: analysis["industry"], revenue: revenue).call
 
