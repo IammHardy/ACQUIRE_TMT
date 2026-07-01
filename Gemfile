@@ -20,7 +20,7 @@ gem "tailwindcss-rails"
 gem "jbuilder"
 
 # Official Anthropic SDK — powers the AI valuation / comps / buyer-match tools
-gem "anthropic", "~> 1.48"
+gem "anthropic", "~> 1.54"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
